@@ -23,7 +23,6 @@ public class AppService {
 		log.error("{}|start", UtilMethods.getMethodName());
 		GeneralBase gbOne = new GeneralBase();
 		gbOne.setGeneralId(12L);
-		gbOne.setGeneralNumber("twelve");
 		gbOne.setOperationalCountryCode("CHUL");
 		return Arrays.asList(gbOne, new GeneralBase());
 	}
