@@ -59,6 +59,12 @@ public class AppController {
 		return new ResponseEntity<>(appService.getFromSQLServer(), HttpStatus.OK);
 	}
     
+    @GetMapping(value = "/getObjectListFromFeignRequest", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public List<GeneralBase> getObjectListFromFeign(@RequestHeader HttpHeaders headers) {
+		log.error("{}|start", UtilMethods.getMethodName());
+		return appService.getObjectListFromFeign(headers);
+	}
+    
     @GetMapping(value = "/getDataFromFeignRequest", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public List<GeneralBase> getDataFromFeignRequest(@RequestHeader HttpHeaders headers) {
 		log.error("{}|start", UtilMethods.getMethodName());

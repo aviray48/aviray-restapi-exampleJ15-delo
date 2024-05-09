@@ -50,9 +50,10 @@ exampleApp:
 
 feign:
   microservice:
-    calledByFeign: http://localhost:12071/calledByFeign
+    calledByFeign: http://localhost:32070/ffs
   uri:
-    getObjectListFromFeign: /getObjectListFromFeign
+    #getObjectListFromFeign: /getObjectListFromFeign
+    getObjectListFromFeign: /getObjectList
     getObjectListFromFeignWithPathVariable: /getObjectListFromFeign
 
 
