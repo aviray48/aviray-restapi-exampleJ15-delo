@@ -39,7 +39,7 @@ public class AppController {
 		SimpleMessageObject simpleMessageObject = new SimpleMessageObject();
 		simpleMessageObject.setResult(true);
 		simpleMessageObject.setTestName(this.getClass().getSimpleName() + "." + UtilMethods.getMethodName());
-		simpleMessageObject.setAdditionalInfo("Testing of closeConnectionTest logging functionality is complete");
+		simpleMessageObject.setGeneralMessage("Testing of closeConnectionTest logging functionality is complete");
 		return simpleMessageObject;
 	}
 	
