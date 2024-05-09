@@ -34,13 +34,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	SecurityConfig config;
 
-	/*
-	@Bean
-	public WebSecurityCustomizer webSecurityCustomizer() {
-		return (web) -> web.ignoring().requestMatchers("/swagger-ui*", "/info", "/health");
-	}
-	*/
-	
 	@Override
     protected void configure(HttpSecurity http) throws Exception {
 		http
