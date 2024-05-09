@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<include resource="org/springframework/boot/logging/logback/defaults.xml" />
+
+	<springProperty scope="context" name="servicename" source="spring.application.name" />
+	<springProperty scope="context" name="serviceloglocation" source="service.log.location" defaultValue="${java.io.tmpdir}"/>
+	<springProperty scope="context" name="serverport" source="server.port" defaultValue="8080"/>
+
+	<appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n
+			</Pattern>
+		</layout>
+	</appender>
+
+	<appender name="fileAppender"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${serviceloglocation}/${servicename}-${serverport}.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>
+				%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n
+			</Pattern>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>
+				${serviceloglocation}/${servicename}-${serverport}.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+		</rollingPolicy>
+	</appender>
+	
+	<appender name="aspectFileAppender"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${serviceloglocation}/${servicename}-${serverport}.audit.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>
+				%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n
+			</Pattern>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>
+				${serviceloglocation}/${servicename}-${serverport}.audit.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+		</rollingPolicy>
+	</appender>
+
+	<logger name="ray.avi.example.aspect.ExampleAppAspect" level="debug" additivity="false">
+		<appender-ref ref="aspectFileAppender" />
+	</logger>
+
+	<logger name="ray.avi.example" level="debug" additivity="false">
+		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="fileAppender" />
+    </logger>
+
+    <root level="error">
+        <appender-ref ref="consoleAppender" />
+        <appender-ref ref="fileAppender" />
+    </root>
+
+</configuration>

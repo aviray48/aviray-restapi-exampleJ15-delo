@@ -1,0 +1,5 @@
+spring:
+  security:
+    user-details:
+      extraRU : "Lid3NgLYGrEBbrAEvES5S,USER,enabled"
+      exampleRestUser : "Pov3NgLYGrEBbrAEvES5S,USER,enabled"

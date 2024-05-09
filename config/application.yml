@@ -1,0 +1,58 @@
+spring:
+  http:
+    encoding:
+      force: false
+      charset: UTF-8
+  main:
+    allow-bean-definition-overriding: true
+  cloud.consul:
+    scheme: https
+    config:
+      format: FILES
+
+#server.port: 12080
+
+#actuator
+management:
+  endpoint:
+    health: 
+      enabled: true
+      show-details: always
+    beans:
+      enabled: true
+    metrics:
+      enabled: true
+    shutdown:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: beans, metrics, info, health, env, mappings
+      base-path: / 
+    jmx:
+      domain: ${spring.application.name}-jmx
+    uniqueNames: true
+  health:
+    db:
+      enabled: false
+
+logging:
+  console:
+    enabled: true
+  file:
+    enabled: false
+
+#-----------
+
+exampleApp:
+  service:
+    restuser: exampleRestUser
+
+feign:
+  microservice:
+    calledByFeign: http://localhost:12071/calledByFeign
+  uri:
+    getObjectListFromFeign: /getObjectListFromFeign
+    getObjectListFromFeignWithPathVariable: /getObjectListFromFeign
+
+

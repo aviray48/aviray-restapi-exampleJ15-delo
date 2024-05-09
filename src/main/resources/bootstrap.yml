@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: connection-test-v2
+  cloud:
+    config:
+      enabled: false
