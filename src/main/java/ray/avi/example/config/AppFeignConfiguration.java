@@ -24,16 +24,12 @@ public class AppFeignConfiguration {
 	@Autowired
 	private SecurityConfig securityConfig;
 
-	private String authorizationHeader;
-	
 	@Bean(name = "authorizationHeader")
 	String getAuthorizationHeader() {
 		UserAttributeEditor editor = new UserAttributeEditor();
 		editor.setAsText(securityConfig.getUserDetails().getProperty(restUser));
 		UserAttribute attribute = (UserAttribute) editor.getValue();
 		log.info("User for downstream services = {}", restUser);
-		//authorizationHeader = "Basic " + Base64.getEncoder().encodeToString((restUser + ":" + attribute.getPassword()).getBytes());
-		//return authorizationHeader;
 		return "Basic " + Base64.getEncoder().encodeToString((restUser + ":" + attribute.getPassword()).getBytes());
 	}
 
@@ -43,10 +39,8 @@ public class AppFeignConfiguration {
 			Map<String, Collection<String>> headers = requestTemplate.headers();
 			requestTemplate.headers(null);
 			requestTemplate.headers(headers);
-			requestTemplate.removeHeader(HttpHeaders.AUTHORIZATION);
-			//requestTemplate.header(HttpHeaders.AUTHORIZATION, authorizationHeader);
+			requestTemplate.removeHeader(HttpHeaders.AUTHORIZATION); //Had to add this line to remove the original AUTHORIZATION header. Without this line, the requestTemplate tries to send both AUTHORIZATION header values at once, and it fails.
 			requestTemplate.header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader());
-			new Object();
 		};
 	}
 
