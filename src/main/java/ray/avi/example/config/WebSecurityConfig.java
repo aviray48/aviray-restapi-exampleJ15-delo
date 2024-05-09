@@ -47,19 +47,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	    	.csrf()
 	    	.disable();
 	}
-
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http
-		.authorizeHttpRequests()
-		.anyRequest().authenticated()
-		.and()
-		.httpBasic()
-		.authenticationEntryPoint(authenticationEntryPoint())
-		;
-		return http.build();
-	}
-
+	
+	/*
+	@Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(inMemoryUserDetailsManager());
+    }
+    @Bean
+    public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
+        return new InMemoryUserDetailsManager(config.getUserDetails());
+    }
+    */
+	
 	@Bean
 	public UserDetailsService userDetailsService() {
 		InMemoryUserDetailsManager inMemoryUserDetailsManager = null;
@@ -76,12 +75,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
+		//return new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder(8);
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
-
-	@Bean
-	public CustomAuthenticationEntryPoint authenticationEntryPoint() {
-		return new CustomAuthenticationEntryPoint();
-	}
-
 }
