@@ -15,7 +15,7 @@ import ray.avi.example.config.AppFeignDecoder;
 public interface AppFeignProxy {
 	
 	@GetMapping("${feign.uri.getFeatureFlagValueFromFeign}")
-	String getFeatureFlagValueFromFeign(@RequestHeader HttpHeaders headers, String flagName);
+	String getFeatureFlagValueFromFeign(@RequestHeader HttpHeaders headers, @PathVariable(value = "flagName") String flagName);
 	
 	@GetMapping("${feign.uri.getObjectListFromFeign}")
 	List<GeneralBase> getObjectListFromFeign(@RequestHeader HttpHeaders headers);
