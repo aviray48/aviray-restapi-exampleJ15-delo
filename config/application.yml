@@ -52,6 +52,7 @@ feign:
   microservice:
     calledByFeign: http://localhost:32070/ffs
   uri:
+    getFeatureFlagValueFromFeign: /feature-flag/flag-name/{flagName}
     #getObjectListFromFeign: /getObjectListFromFeign
     getObjectListFromFeign: /getObjectList
     getObjectListFromFeignWithPathVariable: /getObjectListFromFeign

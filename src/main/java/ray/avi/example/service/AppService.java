@@ -33,6 +33,11 @@ public class AppService {
 		return new GeneralBase();
 	}
 	
+	public String getFeatureFlagValueFromFeign(HttpHeaders headers, String flagName) {
+		log.error("{}|start", UtilMethods.getMethodName());
+		return appFeignProxy.getFeatureFlagValueFromFeign(headers, flagName);
+	}
+	
 	public List<GeneralBase> getObjectListFromFeign(HttpHeaders headers) {
 		log.error("{}|start", UtilMethods.getMethodName());
 		return appFeignProxy.getObjectListFromFeign(headers);
