@@ -1,14 +1,12 @@
-package ray.avi.example.batch.tasks;
+package ray.avi.example.batch.internal;
 
 import org.springframework.context.annotation.Profile;
 import lombok.extern.slf4j.Slf4j;
 import ray.avi.common.util.UtilMethods;
-
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
@@ -35,6 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -43,7 +42,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.crypto.Cipher;
 import javax.xml.bind.JAXBElement;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,16 +59,28 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import javax.annotation.PostConstruct;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import org.springframework.mock.web.MockHttpServletRequest;
 import lombok.NonNull;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 
 
 
 @Profile("batchExampleSimpleBatch")
 @Slf4j
-public class MyTask implements Tasklet {
+public class BatchInternal {
+	
+	public BatchInternal(String[] args) {
+		log.info("{}|BatchInternal Constructor", UtilMethods.getMethodName());
+		executeBatch(args);
+	}
 	
 	static DateFormat simpleDateFormatFormatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss.SSS");
 	static java.time.format.DateTimeFormatter dateTimeFormatterFormatter = java.time.format.DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss.SSS");
@@ -90,11 +100,22 @@ public class MyTask implements Tasklet {
 			"{ \"id\": 0, \"createTimeStamp\": \"2023-01-24T23:59:22.981+00:00\", \"createDBUserId\": \"ice_de\", \"createApplicationUserId\": \"ice_de\", \"createPrincipalName\": \"custdataJmsListRUDE\", \"createProgramName\": \"customer-data-email-edb\", \"lastUpdateTimeStamp\": \"2023-01-24T23:59:22.981+00:00\", \"lastUpdateDBUserId\": \"ice_de\", \"lastUpdateApplicationUserId\": \"ice_de\", \"lastUpdatePrincipalName\": \"custdataJmsListRUDE\", \"lastUpdateProgramName\": \"customer-data-email-edb\", \"totalUpdateCount\": 0, \"replicationId\": 0, \"customerId\": 0, \"customerNumber\": \"10039564\", \"operationalCountryCode\": \"de\", \"lineOfBusiness\": \"qvc\", \"memberNumber\": \"10039564\", \"emailAddress\": \"pa20230123@test.com\", \"bounceCounter\": 0, \"bouncedFlag\": \"N\", \"sendEmailIndicator\": false, \"emailGUIDText\": \"1e2f943f-db74-43f8-8ba2-32358d59805e\", \"lastUpdateUserId\": \"ice_de\" }"
 			;
 	
+	static final String LCADD = "LCADD";
+	static final String LOC_ADD_CARGO = "LOC_ADD_CARGO";
+	static final String RESULTS_ITEM = "Results_item";
+	static final String RESULTS_ITEM_DC_INDV = "Results_item_DC_INDV";
+	//static final String Results_item_DC_LOCMA = "Results_item_DC_LOCMA";
+	static final String RESULTS_COLL = "Results_coll";
+	static final String CLIENTID = "clientId";
+	static final String NHSEQNUM = "nHSequenceNum";
+	static final String ADMISSION_DATE = "admissionDate";
+	static final String ADMISSION_FROM_TO = "admissionFromTo";
+	
 	//The method annotated with the @PostConstruct annotation is never run here, this this class is never actually built into a bean.
 	//In order for the class to be built into a bean, it would need to be annotated with @Configuration or @Component or something similar.
 	//The only reason it is here is because I can never remember the exact name of the @PostConstruct annotation or how it works,
 	//so I put it here, where I will (hopefully) be able to find it easily.
-	@PostConstruct
+	//@PostConstruct
 	public void simpleCheckIfClassInstanceIsActuallyCreated() {
 		System.out.println("simpleCheckIfClassInstanceIsActuallyCreated: Did we get here?");
 	}
@@ -239,13 +260,41 @@ public class MyTask implements Tasklet {
 
 	}
 
+	public static String extractDateElements(String strDate) {
+		String year = null;
+		String month = null;
+		String day = null; 
+		try	{
+			if(strDate != null &&  !"".equals(strDate)) {
+				strDate = strDate.substring(0,10);
+				if(strDate != null)	{
+					java.util.StringTokenizer st = null;
+					st = new StringTokenizer(strDate, "-");
+					year = st.nextToken();
+					month = st.nextToken();
+					day = st.nextToken();
+				}
+			}
+			if(year == null || month == null || day == null) {
+				//It should never get here if things worked correctly, so if it does get here, throw an error.
+				throw new RuntimeException("Bad date for extractDateElements");
+			}
+		}
+		catch(Exception e){
+			log.error("Error in extractDateElements" , e);
+		}
+		return month + "/" + day + "/" + year;
+	}
 
-	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception 
+	public static void executeBatch(String[] args)
 	{
 		System.out.println("");
 		System.out.println(new Date() + ": MyTask SimpleBatch START");
 		log.info("{}|MyTask SimpleBatch START", UtilMethods.getMethodName());
 
+		StringBuffer batchStringBuffer = null;
+		batchStringBuffer = new StringBuffer();
+		
 		try
 		{
 			String hostname = InetAddress.getLocalHost().getHostName();
@@ -924,8 +973,16 @@ public class MyTask implements Tasklet {
 		int minBetweenIntAnIntB = Math.min(intA, intB);
 		log.info("The minimum value between {} and {} is: {}", intA, intB, minBetweenIntAnIntB);		
 
+		String javaClassPath = System.getProperty("java.class.path");
+		System.out.println("javaClassPath = " + javaClassPath);
 
+		String javaVariablePassedInFromVMArgumentsInEclipse = System.getenv("VM_ARGUMENTS_VARIABLE");
+		System.out.println("javaVariablePassedInFromVMArgumentsInEclipse VALUE: " + (javaVariablePassedInFromVMArgumentsInEclipse != null ? javaVariablePassedInFromVMArgumentsInEclipse : "VALUE IS NULL"));
+		
 
+		String javaVariablePassedInFromRunConfigurationEnvironmentInEclipse = System.getenv("ENVIRONMENT_VARIABLE");
+		System.out.println("javaVariablePassedInFromRunConfigurationEnvironmentInEclipse VALUE: " + (javaVariablePassedInFromRunConfigurationEnvironmentInEclipse != null ? javaVariablePassedInFromRunConfigurationEnvironmentInEclipse : "VALUE IS NULL"));	
+		
 		String valMessage1 = null;
 		String valMessage2 = null;
 		String valMessage3 = null;
@@ -1059,14 +1116,16 @@ public class MyTask implements Tasklet {
 		catch(Exception e) {
 			log.error(MessageFormat.format("Error Occurred for ifPresent, Error Message: {0}", e.getMessage()), e);System.out.println();
 		}
+		
 
-		MessageFormat.format("Customer Number is: {0}, five character code is: {1}", customerNumber, "98765").lines().findFirst().ifPresent(infoMessage -> log.info("{}", infoMessage));System.out.println();
-
+		Arrays.asList(MessageFormat.format("Customer Number is: {0}, five character code is: {1}", customerNumber, "98765").split(System.getProperty("line.separator"))).stream().findFirst().ifPresent(infoMessage -> log.info("{}", infoMessage));System.out.println();
+		
 		try {
-			MessageFormat.format("AVAST YE MATEYS, THAR BE A GRAVE MISHAP, ARRR!!! Customer Number is: {0}, five character code is: {1}", customerNumber, "53791").lines().findFirst().ifPresent(infoMessage -> {
-				log.error("{}", infoMessage);
-				throw new RuntimeException("Intentionally Thrown Exception");
-			});
+			Arrays.asList(MessageFormat.format("AVAST YE MATEYS, THAR BE A GRAVE MISHAP, ARRR!!! Customer Number is: {0}, five character code is: {1}", customerNumber, "53791").split(System.getProperty("line.separator"))).stream().findFirst()
+				.ifPresent(infoMessage -> {
+					log.error("{}", infoMessage);
+					throw new RuntimeException("Intentionally Thrown Exception");
+				});
 			log.info("Should not ever get here.");System.out.println();
 		}
 		catch(Exception e) {
@@ -1118,11 +1177,237 @@ public class MyTask implements Tasklet {
 		inst = Instant.now().plus(1, java.time.temporal.ChronoUnit.DAYS);
 		dd = Date.from(inst);
 
+		String java_p_class_p_path = System.getProperty("java.class.path");
+		System.out.println("");
+		System.out.println(new Date() + ": java.class.path: " + System.getProperty("line.separator") + java_p_class_p_path);
+		System.out.println("");
+		
+		ServletRequest servletRequest = null;
+		java.sql.Timestamp dateObject = null;
+		String javaSqlTimestampString = null;
+		String javaSqlTimestampStringAfterExtractData = null;
+		try {
+			servletRequest = new HttpServletRequestWrapper(null);
+			log.info("Should not ever get here.");System.out.println();
+		}
+		catch(Exception e) {
+			log.error(MessageFormat.format("Error intentionally thrown, Error Message: {0}", e.getMessage()), e);System.out.println();
+		}
+		
+		servletRequest = new MockHttpServletRequest();
+		((MockHttpServletRequest) servletRequest).setParameter("firstName", "Ploni");
+		((MockHttpServletRequest) servletRequest).setParameter("lastName", "Almoni");
+		dateObject = new java.sql.Timestamp(Long.parseLong(Long.toString(new Date().getTime())));
+		((MockHttpServletRequest) servletRequest).setAttribute("dateReq", dateObject);
+		javaSqlTimestampString = ((java.sql.Timestamp)servletRequest.getAttribute("dateReq")).toString();
+		log.info("The value of javaSqlTimestampString is: {}", javaSqlTimestampString);System.out.println();
+		javaSqlTimestampStringAfterExtractData = extractDateElements(javaSqlTimestampString);
+		log.info("The value of javaSqlTimestampStringAfterExtractData is: {}", javaSqlTimestampStringAfterExtractData);System.out.println();
+		
+		String aYOrNStr = null;
+		byte byteValue = -128;
+		
+		aYOrNStr = "Y";
+		byteValue = (byte) ("Y".equalsIgnoreCase(aYOrNStr) ? 0 : 1);
+		log.info("For value of aYOrNStr {}, the value of byteValue is: {}", aYOrNStr, byteValue);System.out.println();
+		
+		aYOrNStr = "N";
+		byteValue = (byte) ("Y".equalsIgnoreCase(aYOrNStr) ? 0 : 1);
+		log.info("For value of aYOrNStr {}, the value of byteValue is: {}", aYOrNStr, byteValue);System.out.println();
+		
+		String yesOrNoString;
+		boolean yesOrNoStringIsY;
+		String yesOrNoStringIsYOutput = null;
+		yesOrNoString = null;
+		yesOrNoStringIsY = false;
+		yesOrNoStringIsY = "Y".equalsIgnoreCase(yesOrNoString);
+		log.info("The value of yesOrNoStringIsY is now: {}", yesOrNoStringIsY);System.out.println();
+		yesOrNoStringIsYOutput = "Y".equalsIgnoreCase(yesOrNoString) ? " disabled = 'disabled' " : "";
+		log.info("The value of yesOrNoStringIsYOutput is now: {}", yesOrNoStringIsYOutput);System.out.println();
+		yesOrNoString = "Y";
+		yesOrNoStringIsYOutput = "Y".equalsIgnoreCase(yesOrNoString) ? " disabled = 'disabled' " : "";
+		log.info("The value of yesOrNoStringIsYOutput is now: {}", yesOrNoStringIsYOutput);System.out.println();
+		
+		Map<String, Object> request = null;//(Map<String, Object>)
+		request = new HashMap<String, Object>();
+		Optional<String> opString = Optional.ofNullable(((String)request.get(ADMISSION_FROM_TO)));
+		opString.isPresent();
+		log.info("The value of opString.isPresent() is now: {}", opString.isPresent());System.out.println();
+		opString.map(reqString -> String.valueOf(reqString)).orElse(null);
+		String admissionFromToStringFromOp = opString.map(reqString -> String.valueOf(reqString)).orElse(null);
+		log.info("The value of admissionFromToStringFromOp is now: {}", admissionFromToStringFromOp);System.out.println();
+		Optional.ofNullable(((String)request.get(ADMISSION_FROM_TO))).map(reqString -> String.valueOf(reqString)).orElse(null);
+		log.info("The value of OptionalofNullableEtc is now: {}", Optional.ofNullable(((String)request.get(ADMISSION_FROM_TO))).map(reqString -> String.valueOf(reqString)).orElse(null));System.out.println();
+		request.put(ADMISSION_FROM_TO, "HOME");
+		log.info("The value of OptionalofNullableEtc is now: {}", Optional.ofNullable(((String)request.get(ADMISSION_FROM_TO))).map(reqString -> String.valueOf(reqString)).orElse(null));System.out.println();
+		
+		String caseWorkerProcessedYESNOStrIsYOutputSubmitAndProcessButton = "zzzz";
+		String buttonText = "ddddd";
+		StringBuffer sb = null;
+		sb = new StringBuffer(caseWorkerProcessedYESNOStrIsYOutputSubmitAndProcessButton
+				+ "onclick=\"javascript:"
+				+ "form1.SELECTED_INDV_ID.value='" + request.toString() + "';"
+				+ "form1.NURSING_HOME_SEQUENCE_NUM.value='" + String.valueOf(request.toString()) + "';"
+				+ "form1.PROCESSED_BY.value='" + admissionFromToStringFromOp + "';"
+				+ "form1.ADDITIONAL_COMMENTS_TO_BE_PROCESSED.value='" + admissionFromToStringFromOp + "';"
+				+ "form1.zzzzzzzzzzzz.value='" + admissionFromToStringFromOp + "';"
+				+ "setActionFieldAndSubmit(document.form1,'" + buttonText + "','N');return false;\" ")
+		;
+		char genderChar = 0;// the char value of '\u0000' is equivalent to the char with value of zero
+		String genderInputString = null;
+		String genderOutputString = null;
+		genderInputString = null;
+		genderOutputString = Optional.ofNullable(genderInputString).filter(genderCharStringhl -> genderCharStringhl.length() > 0).map(genderCharString -> String.valueOf(genderCharString)).orElse("Unknown");
+		log.info("The value of genderOutputString is now: {}", genderOutputString);System.out.println();
+		genderInputString = "";
+		genderOutputString = Optional.ofNullable(genderInputString).filter(genderCharStringhl -> genderCharStringhl.length() > 0).map(genderCharString -> String.valueOf(genderCharString)).orElse("Unknown");
+		log.info("The value of genderOutputString is now: {}", genderOutputString);System.out.println();
+		genderInputString = Character.toString(genderChar);
+		genderInputString = genderChar != '\u0000' ? Character.toString(genderChar) : "";
+		genderOutputString = Optional.ofNullable(genderInputString).filter(genderCharStringhl -> genderCharStringhl.length() > 0).map(genderCharString -> String.valueOf(genderCharString)).orElse("Unknown");
+		log.info("The value of genderOutputString is now: {}", genderOutputString);System.out.println();
+		genderChar = 'M';
+		genderInputString = Character.toString(genderChar);
+		genderInputString = genderChar != '\u0000' ? Character.toString(genderChar) : "";
+		genderOutputString = Optional.ofNullable(genderInputString).filter(genderCharStringhl -> genderCharStringhl.length() > 0).map(genderCharString -> String.valueOf(genderCharString)).orElse("Unknown");
+		log.info("The value of genderOutputString is now: {}", genderOutputString);System.out.println();
+		
+		log.info("The value of this byte is now: {}", Byte.parseByte("1"));System.out.println();
+		
+		log.info("The value of this byte is now: {}", new Byte((byte) 0));System.out.println();
+		
+		String[] stringArrOneTwoThree = {};
+      	Object[] objArr = {"One", "Two", "Three"};
+		stringArrOneTwoThree = new String[]{"One", "Two", "Three"};
+		String stringValue = String.join(", ", stringArrOneTwoThree);
+		log.info("The value of stringValue is now: {}", stringValue);System.out.println();
+		
+		String[] stringArray = null;
+		List<String> stringListToFromArray = null;
+		stringListToFromArray = new ArrayList<String>();
+		stringListToFromArray.add("UNIX");
+		stringListToFromArray.add("WINDOWS");
+		stringArray = stringListToFromArray.toArray(new String[0]);
+		log.info("The value of stringArray is now: {}", String.join(", ", stringArray));System.out.println();
+		stringArray = new String[]{"One", "Two", "Three"};
+		stringListToFromArray = Arrays.asList(stringArray);
+		log.info("The value of stringListToFromArray is now: {}", stringListToFromArray);System.out.println();
+		
+		request = new HashMap<String, Object>();
+		request.put("certainSeqNum", (long) 332211);
+		long certainSeqNum = 0;
+		try {
+			certainSeqNum = Long.parseLong((String) request.get("certainSeqNum"));
+			log.info("Worked for 'Long.parseLong((String) request.get(\"certainSeqNum\"))', value of certainSeqNum is: {}", certainSeqNum);System.out.println();
+		}
+		catch(Exception e) {
+			log.error(MessageFormat.format("Error Occurred for 'Long.parseLong((String) request.get(\"certainSeqNum\"))', Error Message: {0}", e.getMessage()), e);System.out.println();
+		}
+		try {
+			certainSeqNum = Long.parseLong(String.valueOf(request.get("certainSeqNum")));
+			log.info("Worked for 'Long.parseLong(String.valueOf(request.get(\"certainSeqNum\")))', value of certainSeqNum is: {}", certainSeqNum);System.out.println();
+		}
+		catch(Exception e) {
+			log.error(MessageFormat.format("Error Occurred for 'Long.parseLong(String.valueOf(request.get(\"certainSeqNum\")))', Error Message: {0}", e.getMessage()), e);System.out.println();
+		}
+	    
+		BigDecimal bigDecimal1 = new BigDecimal("124567890.0987654321");
+		BigDecimal bigDecimal2 = new BigDecimal("987654321.123456789");
+		  
+		// Addition of two BigDecimals 
+		bigDecimal1 = bigDecimal1.add(bigDecimal2); 
+		System.out.println("bigDecimal1 = " + bigDecimal1); 
+
+		// Multiplication of two BigDecimals 
+		bigDecimal1 = bigDecimal1.multiply(bigDecimal2); 
+		System.out.println("bigDecimal1 = " + bigDecimal1); 
+
+		// Subtraction of two BigDecimals 
+		bigDecimal1 = bigDecimal1.subtract(bigDecimal2); 
+		System.out.println("bigDecimal1 = " + bigDecimal1); 
+
+		// Division of two BigDecimals 
+		bigDecimal1 = bigDecimal1.divide(bigDecimal2); 
+		System.out.println("bigDecimal1 = " + bigDecimal1); 
+
+		// BigDecima1 raised to the power of 2 
+		bigDecimal1 = bigDecimal1.pow(2); 
+		System.out.println("bigDecimal1 = " + bigDecimal1); 
+
+		// Negate value of BigDecimal1 
+		bigDecimal1 = bigDecimal1.negate(); 
+		System.out.println("bigDecimal1 = " + bigDecimal1);
+		
+
+	    String decimalString01 = "4567.98";
+	    String decimalString01a = "4567.90";
+	    String decimalString02 = ".075";
+	    
+	    float floatDecimal01 = Float.valueOf(decimalString01);
+	    float floatDecimal02 = Float.valueOf(decimalString02);
+	    float floatDecimal03 = floatDecimal01 + (floatDecimal01 * floatDecimal02);
+		System.out.println("floatDecimal03 = " + floatDecimal03);
+	    
+		BigDecimal bigDecimal01 = new BigDecimal(decimalString01);
+		BigDecimal bigDecimal01a = new BigDecimal(decimalString01a);
+		BigDecimal bigDecimal02 = new BigDecimal(decimalString02);
+		BigDecimal bigDecimal03 = (bigDecimal01.multiply(bigDecimal02)).add(bigDecimal01);
+		System.out.println("bigDecimal03 = " + bigDecimal03);
+		BigDecimal bigDecimal04_HALF_EVEN = (bigDecimal01.multiply(bigDecimal02)).add(bigDecimal01).round(new MathContext(6, RoundingMode.HALF_EVEN));
+		System.out.println("bigDecimal04_HALF_EVEN = " + bigDecimal04_HALF_EVEN);
+		BigDecimal bigDecimal05_HALF_DOWN = (bigDecimal01.multiply(bigDecimal02)).add(bigDecimal01).round(new MathContext(6, RoundingMode.HALF_DOWN));
+		System.out.println("bigDecimal05_HALF_DOWN = " + bigDecimal05_HALF_DOWN);
+		BigDecimal bigDecimal06 = (bigDecimal01.multiply(bigDecimal02)).add(bigDecimal01).round(new MathContext(6, RoundingMode.FLOOR));
+		System.out.println("bigDecimal06 = " + bigDecimal06);
+		BigDecimal bigDecimal07 = (bigDecimal01a.round(new MathContext(6, RoundingMode.HALF_DOWN)).multiply(bigDecimal02)).add(bigDecimal01a);
+		System.out.println("bigDecimal07 = " + bigDecimal07);
+		
+		
+		System.out.println("BatchInternal.class.getName(): " + BatchInternal.class.getName());System.out.println();
+		System.out.println("BatchInternal.class.getSimpleName(): " + BatchInternal.class.getSimpleName());System.out.println();
+		
+		Long valueOfTen = null;
+		Long valueOfNull = null;
+		
+
+		try {
+			valueOfTen = Long.valueOf(10);
+			log.info("valueOfTen is: " + valueOfTen);System.out.println();
+		}
+		catch(Exception e) {
+			log.error(MessageFormat.format("Unexpected Error Occurred for 'Long.valueOf(10)', Error Message: {0}", e.getMessage()), e);System.out.println();
+			log.info("valueOfTen cannot be determined due to error");System.out.println();
+		}
+		try {
+			valueOfNull = Long.valueOf(null);
+			log.info("valueOfNull is: " + valueOfNull);System.out.println();
+		}
+		catch(Exception e) {
+			log.error(MessageFormat.format("Expected Error Occurred for 'Long.valueOf(null)', Error Message: {0}", e.getMessage()), e);System.out.println();
+			log.info("valueOfNull cannot be determined due to error");System.out.println();
+		}
+		
+		String stringWithQuotesForQuery = null;
+		String dataCode = null;
+		Long dataId = null;
+
+		stringWithQuotesForQuery = " '9632-AB99', '9632-AB98', '9632-AB97', '9632-AB96', '9632-AB95' ";
+		dataCode = "9632";
+		dataId = Long.valueOf(198808);
+		
+		String SQL_UPDATE_WITH_PARAMETERS_FOR_BATCH_INTERNAL =
+				" UPDATE TEST.DATA_TABLE_ONE SET VARCHAR_DATA_ONE = 'WQ' WHERE NUMBER_DATA_TWO = _dataIdStringParam_ AND VARCHAR_DATA_THREE = 'G' "
+			+   " AND VARCHAR_DATA_FOUR NOT IN ('MN', 'BV', 'CX') AND (VARCHAR_DATA_FIVE = '_dataCodeParam_' OR VARCHAR_DATA_SIX = '_dataCodeParam_' ) "
+			+   " AND VARCHAR_DATA_SVEN in ( _stringWithQuotesForQueryParam_ )";
+
+
+		String updatedSQLString = SQL_UPDATE_WITH_PARAMETERS_FOR_BATCH_INTERNAL.replace("_dataIdStringParam_", dataId.toString()).replace("_dataCodeParam_", dataCode).replace("_stringWithQuotesForQueryParam_", stringWithQuotesForQuery);
+		
+		log.info("updatedSQL is: " + updatedSQLString);System.out.println();
+		
 		System.out.println("");
 		System.out.println(new Date() + ": MyTask SimpleBatch DONE");
 		log.info("{}|MyTask SimpleBatch DONE", UtilMethods.getMethodName());
 		
-		return RepeatStatus.FINISHED;
-	
 	}    
 }

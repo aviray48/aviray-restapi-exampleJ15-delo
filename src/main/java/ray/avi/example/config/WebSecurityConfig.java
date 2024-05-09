@@ -2,11 +2,13 @@ package ray.avi.example.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,8 +23,10 @@ import java.util.Collection;
 import java.util.Vector;
 
 @Configuration
+@EnableGlobalMethodSecurity(securedEnabled = true)
+@EnableConfigurationProperties(SecurityConfig.class)
 @EnableWebSecurity
-public class WebSecurityConfig {
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Value("${customer.authentication.aggregator.contentSecurityPolicy:default-src 'self'; font-src 'self' https://fonts.gstatic.com; script-src 'unsafe-eval' 'unsafe-inline' 'self'; style-src 'unsafe-inline' 'self' https://fonts.googleapis.com}")
 	private String contentSecurityPolicy;
@@ -30,9 +34,25 @@ public class WebSecurityConfig {
 	@Autowired
 	SecurityConfig config;
 
+	/*
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		return (web) -> web.ignoring().requestMatchers("/swagger-ui*", "/info", "/health");
+	}
+	*/
+	
+	@Override
+    protected void configure(HttpSecurity http) throws Exception {
+		http
+			.authorizeRequests()
+			.antMatchers("/swagger-ui*", "/info", "/health").permitAll()
+			.anyRequest()
+			.fullyAuthenticated()
+			.and()
+			.httpBasic()
+	    	.and()
+	    	.csrf()
+	    	.disable();
 	}
 
 	@Bean
