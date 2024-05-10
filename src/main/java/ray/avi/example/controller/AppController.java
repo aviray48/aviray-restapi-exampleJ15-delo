@@ -75,7 +75,7 @@ public class AppController {
 				log.error("{}|Flag name is blank or null", UtilMethods.getMethodName());
 				throw new Exception(MessageFormat.format("{0}|Flag name is blank or null", UtilMethods.getMethodName()));
 			}
-			return appService.getFeatureFlagValueFromFeign(headers, flagName.trim());
+			return UtilMethods.ObjectToJSONStringNoExceptions(appService.getFeatureFlagValueFromFeign(headers, flagName.trim()).getFeatureFlagNameValueMap());
 		}
 		catch(Exception e){
 			log.error(MessageFormat.format("{}|Error while retrieving value of the Feature Flag with flag name {}", UtilMethods.getMethodName(), flagName), e);

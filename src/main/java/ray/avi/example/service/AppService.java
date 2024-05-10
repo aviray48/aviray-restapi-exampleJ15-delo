@@ -2,10 +2,13 @@ package ray.avi.example.service;
 
 import lombok.AllArgsConstructor;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+
+import ray.avi.common.vo.FeatureFlagNameValueObject;
 import ray.avi.common.vo.GeneralBase;
 import ray.avi.example.feign.AppFeignProxy;
 import ray.avi.common.util.UtilMethods;
@@ -31,9 +34,9 @@ public class AppService {
 		return new GeneralBase();
 	}
 	
-	public String getFeatureFlagValueFromFeign(HttpHeaders headers, String flagName) {
+	public FeatureFlagNameValueObject getFeatureFlagValueFromFeign(HttpHeaders headers, String flagName) {
 		log.error("{}|start", UtilMethods.getMethodName());
-		return appFeignProxy.getFeatureFlagValueFromFeign(headers, flagName);
+		return new FeatureFlagNameValueObject(Collections.singletonMap(flagName, appFeignProxy.getFeatureFlagValueFromFeign(headers, flagName)));
 	}
 	
 	public List<GeneralBase> getObjectListFromFeign(HttpHeaders headers) {
