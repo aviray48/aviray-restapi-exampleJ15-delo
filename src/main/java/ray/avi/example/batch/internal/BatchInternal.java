@@ -7,6 +7,9 @@ import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+
+import static java.util.Map.entry;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
@@ -54,13 +57,18 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.net.InetAddress;
+import java.net.URI;
 import java.net.UnknownHostException;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletRequest;
@@ -1404,6 +1412,19 @@ public class BatchInternal {
 		String updatedSQLString = SQL_UPDATE_WITH_PARAMETERS_FOR_BATCH_INTERNAL.replace("_dataIdStringParam_", dataId.toString()).replace("_dataCodeParam_", dataCode).replace("_stringWithQuotesForQueryParam_", stringWithQuotesForQuery);
 		
 		log.info("updatedSQL is: " + updatedSQLString);System.out.println();
+		
+		String ffUrl = "http://localhost:12345/abc/def-ghi/jkl-mno/{pqrst}";
+		String flagName = "MNBV";
+		String ffAuthorizationHeader = "authHeader";
+		String finalURLString = null;
+		try {
+			finalURLString = UriComponentsBuilder.fromUriString(ffUrl).build().expand(new Object[]{flagName}).toUriString();
+		}
+		catch(Exception e) {
+			log.error(MessageFormat.format("Error Occurred for 'UriComponentsBuilder', Error Message: {0}", e.getMessage()), e);System.out.println();
+		}
+		//RequestEntity<Void> requestEntity = RequestEntity.get(finalURLString).headers(new HttpHeaders(CollectionUtils.toMultiValueMap(Map.ofEntries(entry(HttpHeaders.AUTHORIZATION, java.util.Arrays.asList(ffAuthorizationHeader)))))).build();
+		log.info("requestEntity URL is: " + finalURLString);System.out.println();
 		
 		System.out.println("");
 		System.out.println(new Date() + ": MyTask SimpleBatch DONE");
