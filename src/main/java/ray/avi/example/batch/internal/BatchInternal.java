@@ -1416,7 +1416,6 @@ public class BatchInternal {
 		String ffUrl = "http://localhost:12345/abc/def-ghi/jkl-mno/{pqrst}";
 		String flagName = "MNBV";
 		String ffAuthorizationHeader = "authHeader";
-		
 		String finalURLString = null;
 		try {
 			finalURLString = UriComponentsBuilder.fromUriString(ffUrl).build().expand(new Object[]{flagName}).toUriString();
