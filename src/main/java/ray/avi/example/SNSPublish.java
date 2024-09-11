@@ -18,14 +18,14 @@ public class SNSPublish {
     public static void setup() {
 		AmazonSNSAsyncClientBuilder builder = AmazonSNSAsyncClientBuilder.standard();
 		builder.withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials("accessKey", "secretKey")));
-		builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:7979", "someRegion"));
+		builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:7979", "us-east-1"));
 		snsClient =  builder.build();
 		
     }
 
     public static void publishSomething() {
-        snsClient.publish("arn:aws:sns:someRegion:123456789:test-topic-01", "message");
-        //snsClient.publish("arn:aws:sns:someRegion:123456789:regs-dev-comment-created", "message");
+        snsClient.publish("arn:aws:sns:us-east-1:123456789:test-topic-01", "message");
+        //snsClient.publish("arn:aws:sns:us-east-1:123456789:regs-dev-comment-created", "message");
     }
     
 	public static void main(String[] args) {

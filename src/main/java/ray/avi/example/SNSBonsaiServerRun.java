@@ -18,7 +18,7 @@ public class SNSBonsaiServerRun {
         server = new BonsaiSnsServer.Builder()
             .withAccountId("123456789")
             .withPort(7979)
-            .withRegion("someRegion")
+            .withRegion("us-east-1")
             .withBonsaiSnsEnvironmentDefinition(
                 BonsaiSnsEnvironment.Companion.definition()
                     .withTopic(
