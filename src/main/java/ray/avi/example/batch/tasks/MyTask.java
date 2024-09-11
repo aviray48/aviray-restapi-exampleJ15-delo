@@ -2,7 +2,9 @@ package ray.avi.example.batch.tasks;
 
 import org.springframework.context.annotation.Profile;
 import lombok.extern.slf4j.Slf4j;
+import ray.avi.common.exception.GeneralErrorObject;
 import ray.avi.common.util.UtilMethods;
+import ray.avi.common.vo.SimpleMessageObject;
 
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -1116,6 +1118,18 @@ public class MyTask implements Tasklet {
 		inst = new Date().toInstant().plus(1, java.time.temporal.ChronoUnit.DAYS);
 		inst = Instant.now().plus(1, java.time.temporal.ChronoUnit.DAYS);
 		dd = Date.from(inst);
+
+
+		SimpleMessageObject simpleMessageObject = new SimpleMessageObject();
+		simpleMessageObject.setResult(true);
+		simpleMessageObject.setTestName(this.getClass().getSimpleName() + "." + UtilMethods.getMethodName());
+		simpleMessageObject.setAdditionalInfo("Here is some additional info");
+		log.info("The value of simpleMessageObject is: {}", simpleMessageObject != null ? UtilMethods.ObjectToJSONStringNoExceptions(simpleMessageObject) : "OBJECT IS NULL");System.out.println();
+
+		String jsonString = "{\"result\":true,\"testName\":\"thisIsATest\",\"exceptionMessage\":null,\"additionalInfo\":\"Here is some additional info\"}";
+		SimpleMessageObject simeo = jsonString != null ? UtilMethods.JSONStringToObjectIgnoreUnknownPropertiesNoExceptions(jsonString, SimpleMessageObject.class) : null;
+		//StringUtils.EMPTY
+		log.info("The value of simeo is: {}", simeo != null ? UtilMethods.ObjectToJSONStringNoExceptions(simeo) : "OBJECT IS NULL");System.out.println();
 
 		System.out.println("");
 		System.out.println(new Date() + ": MyTask SimpleBatch DONE");
