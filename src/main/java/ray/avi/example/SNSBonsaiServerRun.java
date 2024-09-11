@@ -27,8 +27,8 @@ public class SNSBonsaiServerRun {
                             //.withName("regs-dev-comment-created")
                             .withSubscription(
                                 Subscription.Companion.definition()
-                                    .withEndpoint("http:/localhost:8080/endpoint")
-                                    //.withEndpoint("http:/localhost:9324/queue1")
+                                    .withEndpoint("http://localhost:9324/testEndpoint01")
+                                    //.withEndpoint("http://localhost:9324/queue1")
                                     .withProtocol("http")
                                     .withAttribute("a", "b")
                             )
