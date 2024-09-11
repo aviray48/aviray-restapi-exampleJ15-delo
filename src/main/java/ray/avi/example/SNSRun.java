@@ -25,11 +25,12 @@ public class SNSRun {
                 BonsaiSnsEnvironment.Companion.definition()
                     .withTopic(
                         Topic.Companion.definition()
-                            .withName("name")
+                            //.withName("name")
+                            .withName("regs-dev-comment-created")
                             .withSubscription(
                                 Subscription.Companion.definition()
-                                    .withEndpoint("http:/localhost:8080/endpoint")
-                                    //.withEndpoint("http:/localhost:9324/queue1")
+                                    //.withEndpoint("http:/localhost:8080/endpoint")
+                                    .withEndpoint("http:/localhost:9324/queue1")
                                     .withProtocol("http")
                                     .withAttribute("a", "b")
                             )
