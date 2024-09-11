@@ -7,16 +7,14 @@ import io.github.gilbertojrequena.bonsai_sns.server.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SNSRun {
+public class SNSBonsaiServerRun {
 
 
-	private static final Logger logger = LoggerFactory.getLogger(SNSRun.class);
+	private static final Logger logger = LoggerFactory.getLogger(SNSBonsaiServerRun.class);
 	
     private static BonsaiSnsServer server;
 
     public static void setup() {
-        // start your app at 8080
-
         server = new BonsaiSnsServer.Builder()
             .withAccountId("123456789")
             .withPort(7979)
@@ -25,12 +23,12 @@ public class SNSRun {
                 BonsaiSnsEnvironment.Companion.definition()
                     .withTopic(
                         Topic.Companion.definition()
-                            //.withName("name")
-                            .withName("regs-dev-comment-created")
+                            .withName("test-topic-01")
+                            //.withName("regs-dev-comment-created")
                             .withSubscription(
                                 Subscription.Companion.definition()
-                                    //.withEndpoint("http:/localhost:8080/endpoint")
-                                    .withEndpoint("http:/localhost:9324/queue1")
+                                    .withEndpoint("http:/localhost:8080/endpoint")
+                                    //.withEndpoint("http:/localhost:9324/queue1")
                                     .withProtocol("http")
                                     .withAttribute("a", "b")
                             )
@@ -48,7 +46,7 @@ public class SNSRun {
 		int i = 1;
 		int b = 2;
 		setup();
-		while (i != 0) {
+		while (b == 2 && i != 0) {
 			i = 1;
 			b = 2;
 		}

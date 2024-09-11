@@ -16,14 +16,7 @@ public class SNSPublish {
     private static AmazonSNS snsClient;
 
     public static void setup() {
-        // start your app at 8080
-
 		AmazonSNSAsyncClientBuilder builder = AmazonSNSAsyncClientBuilder.standard();
-		/*
-		if (this.awsCredentialsProvider != null) {
-			builder.withCredentials(this.awsCredentialsProvider);
-		}
-		*/
 		builder.withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials("accessKey", "secretKey")));
 		builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:7979", "someRegion"));
 		snsClient =  builder.build();
@@ -31,9 +24,8 @@ public class SNSPublish {
     }
 
     public static void publishSomething() {
-        //snsClient.publish("arn:aws:sns:someRegion:123456789:name", "message");
-        snsClient.publish("arn:aws:sns:someRegion:123456789:regs-dev-comment-created", "message");
-        // assertions
+        snsClient.publish("arn:aws:sns:someRegion:123456789:test-topic-01", "message");
+        //snsClient.publish("arn:aws:sns:someRegion:123456789:regs-dev-comment-created", "message");
     }
     
 	public static void main(String[] args) {
