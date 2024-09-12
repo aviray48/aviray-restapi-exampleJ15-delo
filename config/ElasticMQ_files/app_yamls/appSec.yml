@@ -1,7 +1,0 @@
-THING_NAME: thingName
-THING_JDBC_URL: thingJdbcUrl
-THING_LOGIN: thingLogin
-THING_PASSWORD: thingPassword
-some:
-  prop:
-    data: dataValue
