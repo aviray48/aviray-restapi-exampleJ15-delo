@@ -271,7 +271,13 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
-
+		<!-- ElasticMQ for Embedded SQS Tests -->
+		<dependency>
+			<groupId>org.elasticmq</groupId>
+			<artifactId>elasticmq-rest-sqs_2.11</artifactId>
+			<version>0.13.8</version>
+			<scope>test</scope>
+		</dependency>
     </dependencies>
 
 	<profiles>
