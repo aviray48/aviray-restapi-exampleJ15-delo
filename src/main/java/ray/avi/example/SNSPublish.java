@@ -26,7 +26,7 @@ public class SNSPublish {
 
     public static void publishSomething() {
         //snsClient.publish("arn:aws:sns:us-east-1:123456789:test-topic-01", "message");
-        //snsClient.publish("arn:aws:sns:us-east-1:123456789:regs-dev-comment-created", "message");
+        //snsClient.publish("arn:aws:sns:us-east-1:123456789:rs-dev-c-created", "message");
         snsClient.publish("arn:aws:sns:us-east-1:123456789:test-topic-01", "{'sample':'SendToQueuefromTopicViaEclipse'}");
     }
     
