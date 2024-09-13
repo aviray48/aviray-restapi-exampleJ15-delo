@@ -28,6 +28,7 @@ public class SNSPublish {
         //snsClient.publish("arn:aws:sns:us-east-1:123456789:test-topic-01", "message");
         //snsClient.publish("arn:aws:sns:us-east-1:123456789:rs-dev-c-created", "message");
         snsClient.publish("arn:aws:sns:us-east-1:123456789:test-topic-01", "{'sample':'SendToQueuefromTopicViaEclipse'}");
+        logger.info("Published successfully to SNS Topic test-topic-01.");
     }
     
 	public static void main(String[] args) {
@@ -35,6 +36,7 @@ public class SNSPublish {
 		logger.info("{}|Starting aviray-restapi-example-delo", classMethodName);
 		setup();
 		publishSomething();
+		logger.info("{}|Finished aviray-restapi-example-delo", classMethodName);
 	}
 }
 
