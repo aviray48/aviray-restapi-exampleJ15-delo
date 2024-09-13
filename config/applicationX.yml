@@ -49,7 +49,17 @@ rs:
   c.created.sns: rs-dev-c-created
   c.created.snsOrig: rs-${SPRING_PROFILES_ACTIVE}-c-created
 
+regs:
+  submit.comment:
+    queue: regs-dev-create-comment.fifo
+  comment.receipt.queue: regs-dev-comment-receipt.fifo
+  comment.created.sns: regs-dev-comment-created
+
 aws.paramstore.enabled: false
+
+cloud.aws:
+    stack.auto: false
+    region.static: us-east-1 
 
 #-----------
 

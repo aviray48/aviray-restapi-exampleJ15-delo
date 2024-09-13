@@ -51,6 +51,10 @@ rs:
 
 aws.paramstore.enabled: false
 
+cloud.aws:
+    stack.auto: false
+    region.static: us-east-1 
+
 #-----------
 
 exampleApp:

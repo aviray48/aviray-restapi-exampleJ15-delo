@@ -10,6 +10,7 @@ s12vSNS:
   #port: 7979
 
 rs.c.created.sns: arn:aws:sns:us-east-1:123456789:rs-dev-c-created
+regs.comment.created.sns: arn:aws:sns:us-east-1:123456789:regs-dev-comment-created
   
 cloud.aws:
   region.static: us-east-1
