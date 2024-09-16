@@ -42,19 +42,6 @@ logging:
   file:
     enabled: false
 
-rs:
-  submit.c:
-    queue: rs-dev-create-c.fifo
-  c.receipt.queue: rs-dev-c-receipt.fifo
-  c.created.sns: rs-dev-c-created
-  c.created.snsOrig: rs-${SPRING_PROFILES_ACTIVE}-c-created
-
-aws.paramstore.enabled: false
-
-cloud.aws:
-    stack.auto: false
-    region.static: us-east-1 
-
 #-----------
 
 exampleApp:
