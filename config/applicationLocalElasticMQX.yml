@@ -1,0 +1,18 @@
+elasticmq:
+  enabled: true
+  host: localhost
+  port: 9324
+
+s12vSNS:
+  enabled: true
+  host: localhost
+  port: 9911
+  #port: 7979
+
+rs.c.created.sns: arn:aws:sns:us-east-1:123456789:rs-dev-c-created
+regs.comment.created.sns: arn:aws:sns:us-east-1:123456789:regs-dev-comment-created
+  
+cloud.aws:
+  region.static: us-east-1
+  credentials.accessKey: test
+  credentials.secretKey: test
