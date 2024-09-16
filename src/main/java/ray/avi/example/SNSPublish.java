@@ -1,10 +1,10 @@
 package ray.avi.example;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.sns.AmazonSNS;
-import com.amazonaws.services.sns.AmazonSNSAsyncClientBuilder;
+//import com.amazonaws.auth.AWSStaticCredentialsProvider;
+//import com.amazonaws.auth.BasicAWSCredentials;
+//import com.amazonaws.client.builder.AwsClientBuilder;
+//import com.amazonaws.services.sns.AmazonSNS;
+//import com.amazonaws.services.sns.AmazonSNSAsyncClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,9 +26,8 @@ public class SNSPublish {
 
     public static void publishSomething() {
         //snsClient.publish("arn:aws:sns:us-east-1:123456789:test-topic-01", "message");
-        //snsClient.publish("arn:aws:sns:us-east-1:123456789:rs-dev-c-created", "message");
+        //snsClient.publish("arn:aws:sns:us-east-1:123456789:regs-dev-comment-created", "message");
         snsClient.publish("arn:aws:sns:us-east-1:123456789:test-topic-01", "{'sample':'SendToQueuefromTopicViaEclipse'}");
-        logger.info("Published successfully to SNS Topic test-topic-01.");
     }
     
 	public static void main(String[] args) {
@@ -36,7 +35,6 @@ public class SNSPublish {
 		logger.info("{}|Starting aviray-restapi-example-delo", classMethodName);
 		setup();
 		publishSomething();
-		logger.info("{}|Finished aviray-restapi-example-delo", classMethodName);
 	}
 }
 

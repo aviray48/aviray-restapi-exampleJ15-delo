@@ -1,19 +1,30 @@
 package ray.avi.example.config;
 
+import java.net.URI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import io.awspring.cloud.sqs.operations.SqsTemplate;
+import io.awspring.cloud.sqs.operations.SqsTemplateBuilder;
+import software.amazon.awssdk.services.sns.SnsAsyncClient;
+import software.amazon.awssdk.services.sns.SnsAsyncClientBuilder;
+import software.amazon.awssdk.services.sqs.SqsAsyncClient;
+import software.amazon.awssdk.services.sqs.SqsClientBuilder;
+import software.amazon.awssdk.services.sqs.SqsAsyncClientBuilder;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
 
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.sns.AmazonSNSAsync;
-import com.amazonaws.services.sns.AmazonSNSAsyncClientBuilder;
 
-import org.springframework.cloud.aws.core.region.RegionProvider;
-import org.springframework.cloud.aws.messaging.core.NotificationMessagingTemplate;
+//import com.amazonaws.auth.AWSCredentialsProvider;
+//import com.amazonaws.client.builder.AwsClientBuilder;
+//import com.amazonaws.regions.Regions;
+//import com.amazonaws.services.sns.AmazonSNSAsync;
+//import com.amazonaws.services.sns.AmazonSNSAsyncClientBuilder;
+//import io.awspring.cloud.messaging.core.NotificationMessagingTemplate;
+//import org.springframework.cloud.aws.core.region.RegionProvider;
+//import org.springframework.cloud.aws.messaging.core.NotificationMessagingTemplate;
 
 /**
  * SNS Client Configuration. 
@@ -45,12 +56,6 @@ public class SnsClientConfiguration {
 	@Value("${s12vSNS.port:9911}")
 	private String s12vSNSPort;
 
-	/**
-	 * The Region Provider
-	 */
-	@Autowired(required = false)
-	private RegionProvider regionProvider;
-
 	
 	/**
 	 * Creates the AmazonSNSAsync Bean. 
@@ -59,22 +64,19 @@ public class SnsClientConfiguration {
 	 */
 	@Lazy
 	@Bean(destroyMethod = "shutdown")
-	public AmazonSNSAsync amazonSNS() throws Exception {
+	public SnsAsyncClient amazonSNS() throws Exception {
 
-		AmazonSNSAsyncClientBuilder builder = AmazonSNSAsyncClientBuilder.standard();
+		SnsAsyncClientBuilder builder = SnsAsyncClient.builder();
 
 		if (this.awsCredentialsProvider != null) {
 			builder.withCredentials(this.awsCredentialsProvider);
 		}
 		
 		if (this.s12vSNSEnabled) {
-			String elasticMqUrl = "http://" + s12vSNSHost + ":" + s12vSNSPort;
-			builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(elasticMqUrl, "us-east-1"));
-		} else if (this.regionProvider != null) {
-			builder.withRegion(this.regionProvider.getRegion().getName());
-		} else {
-			builder.withRegion(Regions.DEFAULT_REGION);
+			String s12vUrl = "http://" + s12vSNSHost + ":" + s12vSNSPort;
+			builder.endpointOverride(new URI(s12vUrl));
 		}
+		builder.region(Region.US_EAST_1);
 		
 		return builder.build();
 	}

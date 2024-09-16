@@ -3,7 +3,9 @@ package ray.avi.example.messaging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.cloud.aws.messaging.core.NotificationMessagingTemplate;
+
+import io.awspring.cloud.messaging.core.NotificationMessagingTemplate;
+//import org.springframework.cloud.aws.messaging.core.NotificationMessagingTemplate;
 import lombok.extern.slf4j.Slf4j;
 import ray.avi.common.vo.SimpleMessageObject;
 
@@ -16,8 +18,8 @@ public class MessageSendertoTopicImpl implements MessageSendertoTopic {
 
 	private NotificationMessagingTemplate notificationMessagingTemplate;
 
-	//@Value("${regs.comment.created.sns}")
-	@Value("${rs.c.created.sns}")
+	@Value("${regs.comment.created.sns}")
+	//@Value("${rs.c.created.sns}")
 	private String snsTopicName;
 
 	@Autowired

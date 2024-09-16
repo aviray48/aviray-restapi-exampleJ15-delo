@@ -1,24 +1,34 @@
 package ray.avi.example.config;
 
+import java.net.URI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.sqs.AmazonSQSAsync;
-import com.amazonaws.services.sqs.AmazonSQSAsyncClientBuilder;
-
-import org.springframework.cloud.aws.core.region.RegionProvider;
-import org.springframework.cloud.aws.messaging.config.SimpleMessageListenerContainerFactory;
-import org.springframework.cloud.aws.messaging.core.QueueMessagingTemplate;
+import io.awspring.cloud.sqs.operations.SqsTemplate;
+import io.awspring.cloud.sqs.operations.SqsTemplateBuilder;
+import software.amazon.awssdk.services.sqs.SqsAsyncClient;
+import software.amazon.awssdk.services.sqs.SqsClientBuilder;
+import software.amazon.awssdk.services.sqs.SqsAsyncClientBuilder;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+//import com.amazonaws.auth.AWSCredentialsProvider;
+//import com.amazonaws.client.builder.AwsClientBuilder;
+//import com.amazonaws.regions.Regions;
+//import com.amazonaws.services.sqs.AmazonSQSAsync;
+//import com.amazonaws.services.sqs.AmazonSQSAsyncClientBuilder;
+//import io.awspring.cloud.messaging.config.SimpleMessageListenerContainerFactory;
+//import io.awspring.cloud.messaging.core.QueueMessagingTemplate;
+//import org.springframework.cloud.aws.core.region.RegionProvider;
+//import org.springframework.cloud.aws.messaging.config.SimpleMessageListenerContainerFactory;
+//import org.springframework.cloud.aws.messaging.core.QueueMessagingTemplate;
+//import org.springframework.cloud.aws.messaging.config.annotation.EnableSqs;
 
 /**
  * SQS Client Configuration. Points to ElasticMQ if it is enabled.
  */
+//@EnableSqs
 @Configuration
 public class SqsClientConfiguration {
 
@@ -26,7 +36,7 @@ public class SqsClientConfiguration {
 	 * The AWSCredentialsProvider
 	 */
 	@Autowired(required = false)
-	private AWSCredentialsProvider awsCredentialsProvider;
+	private AwsCredentialsProvider awsCredentialsProvider;
 
 	/**
 	 * Flag indicating if ElasticMQ is enabled. By default this is false.
@@ -46,11 +56,8 @@ public class SqsClientConfiguration {
 	@Value("${elasticmq.port:9324}")
 	private String elasticMqPort;
 
-	/**
-	 * The Region Provider
-	 */
-	@Autowired(required = false)
-	private RegionProvider regionProvider;
+	//@Autowired(required = false)
+	//private RegionProvider regionProvider;
 
 	/**
 	 * The SQS Listener Max Number of messages to process at once. By default
@@ -77,23 +84,19 @@ public class SqsClientConfiguration {
 	 */
 	@Lazy
 	@Bean(destroyMethod = "shutdown")
-	public AmazonSQSAsync amazonSQS() throws Exception {
+	public SqsAsyncClient amazonSQS() throws Exception {
 
-		AmazonSQSAsyncClientBuilder builder = AmazonSQSAsyncClientBuilder.standard();
+		SqsAsyncClientBuilder builder = SqsAsyncClient.builder();
 
 		if (this.awsCredentialsProvider != null) {
-			builder.withCredentials(this.awsCredentialsProvider);
+			builder.credentialsProvider(this.awsCredentialsProvider);
 		}
 
 		if (this.elasticMqEnabled) {
 			String elasticMqUrl = "http://" + elasticMqHost + ":" + elasticMqPort;
-			builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(elasticMqUrl, "us-east-1"));
-		} else if (this.regionProvider != null) {
-			builder.withRegion(this.regionProvider.getRegion().getName());
-		} else {
-			builder.withRegion(Regions.DEFAULT_REGION);
+			builder.endpointOverride(new URI(elasticMqUrl));
 		}
-
+		builder.region(Region.US_EAST_1);
 		return builder.build();
 	}
 
@@ -105,8 +108,9 @@ public class SqsClientConfiguration {
 	 * @return the QueueMessagingTemplate
 	 */
 	@Bean
-	public QueueMessagingTemplate queueMessagingTemplate(AmazonSQSAsync amazonSqsClient) {
-		return new QueueMessagingTemplate(amazonSqsClient);
+	public SqsTemplate sqsTemplate(SqsAsyncClient amazonSqsClient) {
+		SqsTemplateBuilder sqsTemplateBuilder = SqsTemplate.builder();
+		return sqsTemplateBuilder.sqsAsyncClient(amazonSqsClient).build();
 	}
 
 	/**
