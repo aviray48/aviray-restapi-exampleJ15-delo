@@ -43,6 +43,7 @@
 		<com.ibm.mq.jms.version>7.5.0.3</com.ibm.mq.jms.version>
 		<com.ibm.mq.headers.version>7.5.0.3</com.ibm.mq.headers.version>
 		<jacoco-maven-plugin.version>0.8.3</jacoco-maven-plugin.version>
+		<testFileExists>true</testFileExists>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -238,8 +239,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.12.0</version>
-		</dependency>
+			</dependency>
 		<dependency>
 			<groupId>org.junit.vintage</groupId>
 			<artifactId>junit-vintage-engine</artifactId>
@@ -328,6 +328,37 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-antrun-plugin</artifactId>
+	            <executions>
+	                <execution>
+						<id>checkIfFileExists</id>
+	                	<phase>compile</phase>
+	                	<configuration>
+		                    <target name="checkIfFileExistsTarget" if="testFileExists">
+								<echo>Setting up a test to see I can do something on the condition the file src/main/utils/mavenTestFile01.txt exists.</echo>
+								<available file="src/main/utils/mavenTestFile01.txt" property="doesFileExist" />
+		                    </target>
+	                	</configuration>
+		                <goals>
+		                    <goal>run</goal>
+		                </goals>
+	              	</execution>
+	                <execution>
+						<id>doSomethingOnlyIfFileExistsTest</id>
+	                	<phase>compile</phase>
+	                	<configuration>
+		                    <target name="doSomethingOnlyIfFileExistsTestTarget" if="${doesFileExist}">
+								<echo>Testing if I can do something on the condition a file exists. This message should only print if the file src/main/utils/mavenTestFile01.txt exists.</echo>
+		                    </target>
+	                	</configuration>
+		                <goals>
+		                    <goal>run</goal>
+		                </goals>
+	              	</execution>
+	            </executions>
+	        </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
