@@ -336,7 +336,7 @@
 						<id>checkIfFileExists</id>
 	                	<phase>compile</phase>
 	                	<configuration>
-		                    <target name="checkIfFileExistsTarget" if="testFileExists">
+		                    <target name="checkIfFileExistsTarget" if="${testFileExists}">
 								<echo>Setting up a test to see I can do something on the condition the file src/main/utils/mavenTestFile01.txt exists.</echo>
 								<available file="src/main/utils/mavenTestFile01.txt" property="doesFileExist" />
 		                    </target>
