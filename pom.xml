@@ -43,7 +43,7 @@
 		<com.ibm.mq.jms.version>7.5.0.3</com.ibm.mq.jms.version>
 		<com.ibm.mq.headers.version>7.5.0.3</com.ibm.mq.headers.version>
 		<jacoco-maven-plugin.version>0.8.3</jacoco-maven-plugin.version>
-		<testFileExists>true</testFileExists>
+		<testFileExists>false</testFileExists>
     </properties>
     <dependencyManagement>
         <dependencies>
