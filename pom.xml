@@ -340,6 +340,7 @@
 								<echo>Setting up a test to see I can do something on the condition the file src/main/utils/mavenTestFile01.txt exists.</echo>
 								<available file="src/main/utils/mavenTestFile01.txt" property="doesFileExist" />
 		                    </target>
+		                    <exportAntProperties>true</exportAntProperties>
 	                	</configuration>
 		                <goals>
 		                    <goal>run</goal>
@@ -349,6 +350,9 @@
 						<id>doSomethingOnlyIfFileExistsTest</id>
 	                	<phase>compile</phase>
 	                	<configuration>
+		                    <!--<target name="doSomethingOnlyIfFileExistsTestTarget" if="${testFileExists}">
+								<echo message="value of doesFileExist: ${doesFileExist}" />
+		                    </target>-->
 		                    <target name="doSomethingOnlyIfFileExistsTestTarget" if="${doesFileExist}">
 								<echo>Testing if I can do something on the condition a file exists. This message should only print if the file src/main/utils/mavenTestFile01.txt exists.</echo>
 		                    </target>
