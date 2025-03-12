@@ -1,0 +1,169 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+		<title>Avi Ray SheetJS Local Demo</title>
+    </head>
+	<script type="text/javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha384-1H217gwSVyLSIfaLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs" crossorigin="anonymous"></script>
+	<script>
+		function fetchJSONAndParseErrorGetJSONFail() {
+			const url = "/rocis/jsp3/SheetJSDemo/NOPE.json";
+			$.getJSON(url, function(result){
+				console.log( "resultString: " + JSON.stringify(result));
+			})
+			.then(function(resultArr) {
+				const worksheet = XLSX.utils.json_to_sheet(resultArr);
+			})
+			.catch(function(jqXHR, errorText) {
+				if(jqXHR.status){
+					alert( "HTTP Request failed: " + errorText );
+					console.log( "HTTP Request failed: " + errorText );
+				}
+				else {
+					alert( "Processing error occurred: " + jqXHR.toString() );
+					console.log( "Processing error occurred: " + jqXHR.toString() );
+				}
+			});
+		}
+		function fetchJSONAndParseErrorProcessingFail() {
+			const url = "/executive.json";
+			$.getJSON(url, function(result){
+				console.log( "resultString: " + JSON.stringify(result));
+			})
+			.then(function(resultArr) {
+				const worksheet = XLSX.utils.json_to_sheet(resultArr);
+				throw new Error('This is an intentionally thrown error.');
+			})
+			.catch(function(jqXHR, errorText) {
+				if(jqXHR.status){
+					alert( "HTTP Request failed: " + errorText );
+					console.log( "HTTP Request failed: " + errorText );
+				}
+				else {
+					alert( "Processing error occurred: " + jqXHR.toString() );
+					console.log( "Processing error occurred: " + jqXHR.toString() );
+				}
+			});
+		}
+		async function fetchJSONAndParseAsync() {
+			//const url = "https://docs.sheetjs.com/executive.json";
+			//const url = "http://localhost:8080/executive.json";
+			const url = "/executive.json";
+			const raw_data = await (await fetch(url)).json();
+			const stringifiedData = JSON.stringify(raw_data);
+			console.log("JSON from URL: " + stringifiedData);
+			const prez = raw_data.filter(row => row.terms.some(term => term.type === "prez"));
+			prez.forEach(row => row.start = row.terms.find(term => term.type === "prez").start);
+			prez.sort((l,r) => l.start.localeCompare(r.start));
+			const rows = prez.map(row => ({
+			name: row.name.first + " " + row.name.last,
+			birthday: row.bio.birthday
+			}));
+			const worksheet = XLSX.utils.json_to_sheet(rows);
+			const workbook = XLSX.utils.book_new();
+			XLSX.utils.book_append_sheet(workbook, worksheet, "Dates");
+			XLSX.utils.sheet_add_aoa(worksheet, [["Name", "Birthday"]], { origin: "A1" });
+			const max_width = rows.reduce((w, r) => Math.max(w, r.name.length), 10);
+			worksheet["!cols"] = [ { wch: max_width } ];
+			XLSX.writeFile(workbook, "PresidentsAsync.xlsx", { compression: true });
+		}
+		function fetchJSONAndParse() {
+			const url = "/executive.json";
+			$.getJSON(url, function(result){
+				console.log( "resultString: " + JSON.stringify(result));
+			})
+			.then(function(resultArr) {
+				const prez = resultArr.filter(row => row.terms.some(term => term.type === "prez"));
+				prez.forEach(row => row.start = row.terms.find(term => term.type === "prez").start);
+				prez.sort((l,r) => l.start.localeCompare(r.start));
+				const rows = prez.map(row => ({
+					name: row.name.first + " " + row.name.last,
+					birthday: row.bio.birthday
+				}));
+				const worksheet = XLSX.utils.json_to_sheet(rows);
+				const workbook = XLSX.utils.book_new();
+				XLSX.utils.book_append_sheet(workbook, worksheet, "Dates");
+				XLSX.utils.sheet_add_aoa(worksheet, [["Name", "Birthday"]], { origin: "A1" });
+				const max_width = rows.reduce((w, r) => Math.max(w, r.name.length), 10);
+				worksheet["!cols"] = [ { wch: max_width } ];
+				XLSX.writeFile(workbook, "Presidents.xlsx", { compression: true });
+			})
+			.catch(function(jqXHR, errorText) {
+				if(jqXHR.status){
+					alert( "HTTP Request failed: " + errorText );
+					console.log( "HTTP Request failed: " + errorText );
+				}
+				else {
+					alert( "Processing error occurred: " + jqXHR.toString() );
+					console.log( "Processing error occurred: " + jqXHR.toString() );
+				}
+			});
+		}
+		function fetchJSONAndParseNoFilter() {
+			const url = "/executiveTrim.json";
+			$.getJSON(url, function(result){
+				console.log( "resultString: " + JSON.stringify(result));
+			})
+			.then(function(resultArr) {
+				const worksheet = XLSX.utils.json_to_sheet(resultArr);
+				const workbook = XLSX.utils.book_new();
+				XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+				const max_width = resultArr.reduce((w, r) => Math.max(w, r.name.length), 10);
+				worksheet["!cols"] = [ { wch: max_width } ];
+				XLSX.writeFile(workbook, "NoFilter.xlsx", { compression: true });
+			})
+			.catch(function(jqXHR, errorText) {
+				if(jqXHR.status){
+					alert( "HTTP Request failed: " + errorText );
+					console.log( "HTTP Request failed: " + errorText );
+				}
+				else {
+					alert( "Processing error occurred: " + jqXHR.toString() );
+					console.log( "Processing error occurred: " + jqXHR.toString() );
+				}
+			});
+		}
+		function fetchJSONAndParseNoFilterArrays() {
+			const url = "/executiveTrimArrays.json";
+			$.getJSON(url, function(result){
+				console.log( "resultString: " + JSON.stringify(result));
+			})
+			.then(function(resultArr) {
+				const worksheet = XLSX.utils.aoa_to_sheet(resultArr);
+				const workbook = XLSX.utils.book_new();
+				XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+				const max_width = resultArr.reduce((w, r) => Math.max(w, r.name.length), 20);
+				//const max_width = resultArr.reduce(reduceFunc, 20);
+				worksheet["!cols"] = [ { wch: max_width } ];
+				XLSX.writeFile(workbook, "NoFilterArrays.xlsx", { compression: true });
+			})
+			.catch(function(jqXHR, errorText) {
+				if(jqXHR.status){
+					alert( "HTTP Request failed: " + errorText );
+					console.log( "HTTP Request failed: " + errorText );
+				}
+				else {
+					alert( "Processing error occurred: " + jqXHR.toString() );
+					console.log( "Processing error occurred: " + jqXHR.toString() );
+				}
+			});
+		}
+
+		function reduceFunc(total, currentValue, initialValue) {
+			var res = Math.max(total, currentValue.length);
+			return res;
+		}
+	</script>
+
+    <body>
+		<div style="padding-left:35px;">
+			<p style="font-size:32px;width:82%; text-align:left;">Avi Ray SheetJS Local Demo</p>
+			<input type="button" value="getFileErrorGetJSONFail" onclick="javascript:fetchJSONAndParseErrorGetJSONFail();"><br><br>
+			<input type="button" value="getFileErrorProcessingFail" onclick="javascript:fetchJSONAndParseErrorProcessingFail();"><br><br>
+			<input type="button" value="getFileAsync" onclick="javascript:fetchJSONAndParseAsync();"><br><br>
+			<input type="button" value="getFile" onclick="javascript:fetchJSONAndParse();"><br><br>
+			<input type="button" value="getFileNoFilter" onclick="javascript:fetchJSONAndParseNoFilter();"><br><br>
+			<input type="button" value="getFileNoFilterArrays" onclick="javascript:fetchJSONAndParseNoFilterArrays();"><br><br>
+		</div>
+    </body>
+</html>

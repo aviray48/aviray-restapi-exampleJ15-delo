@@ -1,0 +1,77 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+		<title>Avi Ray SheetJS Local Demo</title>
+    </head>
+	<script type="text/javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha384-1H217gwSVyLSIfaLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs" crossorigin="anonymous"></script>
+	<script>
+		async function fetchJSONAndParseAsync() {
+			//const url = "https://docs.sheetjs.com/executive.json";
+			const url = "http://localhost:8080/executive.json";
+			//const raw_data = fetch(url).json();
+			//let myObject = await fetch(url);
+			//const raw_data = await myObject.text();
+			//console.log("url text: " + raw_data);
+			const raw_data = await (await fetch(url)).json();
+			const stringifiedData = JSON.stringify(raw_data);
+			console.log("JSON from URL: " + stringifiedData);
+			const prez = raw_data.filter(row => row.terms.some(term => term.type === "prez"));
+			prez.forEach(row => row.start = row.terms.find(term => term.type === "prez").start);
+			prez.sort((l,r) => l.start.localeCompare(r.start));
+			const rows = prez.map(row => ({
+			name: row.name.first + " " + row.name.last,
+			birthday: row.bio.birthday
+			}));
+			const worksheet = XLSX.utils.json_to_sheet(rows);
+			const workbook = XLSX.utils.book_new();
+			XLSX.utils.book_append_sheet(workbook, worksheet, "Dates");
+			XLSX.utils.sheet_add_aoa(worksheet, [["Name", "Birthday"]], { origin: "A1" });
+			const max_width = rows.reduce((w, r) => Math.max(w, r.name.length), 10);
+			worksheet["!cols"] = [ { wch: max_width } ];
+			XLSX.writeFile(workbook, "Presidents.xlsx", { compression: true });
+		}
+		function fetchJSONAndParse() {
+			const url = "http://localhost:8080/executive.json";
+			var resultArr = null;
+			var resultString = null;
+			$.getJSON(url, function(result){
+				resultArr = result;
+				resultString = JSON.stringify(result);
+				console.log( "resultString: " + resultString);
+				const prez = resultArr.filter(row => row.terms.some(term => term.type === "prez"));
+				prez.forEach(row => row.start = row.terms.find(term => term.type === "prez").start);
+				prez.sort((l,r) => l.start.localeCompare(r.start));
+				const rows = prez.map(row => ({
+				name: row.name.first + " " + row.name.last,
+				birthday: row.bio.birthday
+				}));
+				const worksheet = XLSX.utils.json_to_sheet(rows);
+				const workbook = XLSX.utils.book_new();
+				XLSX.utils.book_append_sheet(workbook, worksheet, "Dates");
+				XLSX.utils.sheet_add_aoa(worksheet, [["Name", "Birthday"]], { origin: "A1" });
+				const max_width = rows.reduce((w, r) => Math.max(w, r.name.length), 10);
+				worksheet["!cols"] = [ { wch: max_width } ];
+				XLSX.writeFile(workbook, "Presidents.xlsx", { compression: true });
+				console.log( "success" );
+			})
+			.done(function() {
+				console.log( "second success" );
+			})
+			.fail(function() {
+				console.log( "error" );
+			})
+			.always(function() {
+				console.log( "complete" );
+			});
+		}
+	</script>
+
+    <body>
+		<div style="padding-left:35px;">
+			<p style="font-size:32px;width:82%; text-align:left;">Avi Ray SheetJS Local Demo</p>
+			<input type="button" value="getFile" name="getFile" onclick="javascript:fetchJSONAndParse();"><br><br>
+			<input type="button" value="getFileAsync" name="getFileAsync" onclick="javascript:fetchJSONAndParseAsync();"><br><br>
+		</div>
+    </body>
+</html>

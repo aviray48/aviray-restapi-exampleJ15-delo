@@ -275,6 +275,8 @@
 				<directory>${basedir}/src/main/resources</directory>
 				<includes>
 					<include>*</include>
+                    <include>**/*.html</include>
+                    <include>**/*.json</include>
 				</includes>
 			</resource>
 			<resource>           
