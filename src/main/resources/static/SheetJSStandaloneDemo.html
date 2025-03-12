@@ -132,8 +132,9 @@
 				const worksheet = XLSX.utils.aoa_to_sheet(resultArr);
 				const workbook = XLSX.utils.book_new();
 				XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
-				const max_width = resultArr.reduce((w, r) => Math.max(w, r.name.length), 20);
+				//const max_width = resultArr.reduce((w, r) => Math.max(w, r.name.length), 20);
 				//const max_width = resultArr.reduce(reduceFunc, 20);
+				const max_width = resultArr.reduce((w, r) => Math.max(w, r.length), 20);
 				worksheet["!cols"] = [ { wch: max_width } ];
 				XLSX.writeFile(workbook, "NoFilterArrays.xlsx", { compression: true });
 			})
