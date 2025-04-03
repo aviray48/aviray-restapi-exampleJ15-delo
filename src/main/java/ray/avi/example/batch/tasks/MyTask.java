@@ -1119,7 +1119,10 @@ public class MyTask implements Tasklet {
 		inst = Instant.now().plus(1, java.time.temporal.ChronoUnit.DAYS);
 		dd = Date.from(inst);
 
-
+		Class<?> classOjbectToGetSimpleName = String.class;
+		classOjbectToGetSimpleName.getSimpleName();
+		log.info("The Simple Name of the class classOjbectToGetSimpleName is: {}", classOjbectToGetSimpleName.getSimpleName());System.out.println();
+		
 		SimpleMessageObject simpleMessageObject = new SimpleMessageObject();
 		simpleMessageObject.setResult(true);
 		simpleMessageObject.setTestName(this.getClass().getSimpleName() + "." + UtilMethods.getMethodName());
@@ -1134,6 +1137,9 @@ public class MyTask implements Tasklet {
 		System.out.println("");
 		System.out.println(new Date() + ": MyTask SimpleBatch DONE");
 		log.info("{}|MyTask SimpleBatch DONE", UtilMethods.getMethodName());
+		
+
+		
 		
 		return RepeatStatus.FINISHED;
 	
