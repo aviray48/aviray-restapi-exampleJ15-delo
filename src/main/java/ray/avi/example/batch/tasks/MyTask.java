@@ -1123,6 +1123,7 @@ public class MyTask implements Tasklet {
 		classOjbectToGetSimpleName.getSimpleName();
 		log.info("The Simple Name of the class classOjbectToGetSimpleName is: {}", classOjbectToGetSimpleName.getSimpleName());System.out.println();
 		
+		
 		SimpleMessageObject simpleMessageObject = new SimpleMessageObject();
 		simpleMessageObject.setResult(true);
 		simpleMessageObject.setTestName(this.getClass().getSimpleName() + "." + UtilMethods.getMethodName());
