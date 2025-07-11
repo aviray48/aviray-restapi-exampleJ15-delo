@@ -200,17 +200,17 @@ public class MyTask implements Tasklet {
 	
 	private static <T> Map<String, List<T>> filterResultsGeneralErrorResponseObjectWDate(Map<String, List<T>> originalResults, Class<T> tClass, LocalDateTime localDateTimeToFilterAfter) {
 		Map<String, List<T>> filteredResults = originalResults.entrySet().stream().map(originalMapEntry -> {
-			List<T> newRdrCommonInfoList =  new ArrayList<T>();
+			List<T> newGeneralErrorResponseObjectWDateList =  new ArrayList<T>();
 			for (T t : originalMapEntry.getValue()) {
 				GeneralErrorResponseObjectWDate generalErrorResponseObjectWDate = null;
 				if(GeneralErrorResponseObjectWDate.class.isAssignableFrom(t.getClass())) {
 					generalErrorResponseObjectWDate = (GeneralErrorResponseObjectWDate) t;
 					if(generalErrorResponseObjectWDate.getGeneralDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().isAfter(localDateTimeToFilterAfter)) {
-						newRdrCommonInfoList.add(t);
+						newGeneralErrorResponseObjectWDateList.add(t);
 					}
 				}
 			}
-			originalMapEntry.setValue(newRdrCommonInfoList);
+			originalMapEntry.setValue(newGeneralErrorResponseObjectWDateList);
 			return originalMapEntry;
 		}).collect(Collectors.toMap(newMapEntry -> newMapEntry.getKey(), newMapEntry -> newMapEntry.getValue()));
 		return filteredResults;
