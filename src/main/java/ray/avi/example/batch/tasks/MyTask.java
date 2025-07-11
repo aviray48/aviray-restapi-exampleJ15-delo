@@ -198,7 +198,7 @@ public class MyTask implements Tasklet {
 		return switchSetValue;
 	}
 	
-	private static <T> Map<String, List<T>> filterResultsGeneralErrorResponseObjectWDate(Map<String, List<T>> originalResults, Class<T> tClass, LocalDateTime localDateTimeToFilterAfter) {
+	private static <T> Map<String, List<T>> filterResultsGeneralErrorResponseObjectWDateV1(Map<String, List<T>> originalResults, Class<T> tClass, LocalDateTime localDateTimeToFilterAfter) {
 		Map<String, List<T>> filteredResults = originalResults.entrySet().stream().filter(originalMapEntry -> {
 			boolean hasMatchingData = false;
 			List<T> newRdrCommonInfoList =  new ArrayList<T>();
@@ -216,7 +216,61 @@ public class MyTask implements Tasklet {
 			return hasMatchingData;
 		}).collect(Collectors.toMap(newMapEntry -> newMapEntry.getKey(), newMapEntry -> newMapEntry.getValue()));
 		return filteredResults;
-	} 
+	}
+	
+	private static <T> Map<String, List<T>> filterResultsGeneralErrorResponseObjectWDateV2(Map<String, List<T>> originalResults, Class<T> tClass, LocalDateTime localDateTimeToFilterAfter) {
+		Map<String, List<T>> filteredResults = originalResults.entrySet().stream().map(originalMapEntry -> {
+			List<T> newRdrCommonInfoList =  new ArrayList<T>();
+			for (T t : originalMapEntry.getValue()) {
+				GeneralErrorResponseObjectWDate generalErrorResponseObjectWDate = null;
+				if(GeneralErrorResponseObjectWDate.class.isAssignableFrom(t.getClass())) {
+					generalErrorResponseObjectWDate = (GeneralErrorResponseObjectWDate) t;
+					if(generalErrorResponseObjectWDate.getGeneralDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().isAfter(localDateTimeToFilterAfter)) {
+						newRdrCommonInfoList.add(t);
+					}
+				}
+			}
+			originalMapEntry.setValue(newRdrCommonInfoList);
+			return originalMapEntry;
+		}).collect(Collectors.toMap(newMapEntry -> newMapEntry.getKey(), newMapEntry -> newMapEntry.getValue()));
+		return filteredResults;
+	}
+	
+	private static <T> Map<String, List<T>> filterResultsGeneralErrorResponseObjectWDate(Map<String, List<T>> originalResults, Class<T> tClass, LocalDateTime localDateTimeToFilterAfter) {
+		Map<String, List<T>> filteredResults = originalResults.entrySet().stream().map(originalMapEntry -> {
+			List<T> newRdrCommonInfoList =  new ArrayList<T>();
+			for (T t : originalMapEntry.getValue()) {
+				GeneralErrorResponseObjectWDate generalErrorResponseObjectWDate = null;
+				if(GeneralErrorResponseObjectWDate.class.isAssignableFrom(t.getClass())) {
+					generalErrorResponseObjectWDate = (GeneralErrorResponseObjectWDate) t;
+					if(generalErrorResponseObjectWDate.getGeneralDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().isAfter(localDateTimeToFilterAfter)) {
+						newRdrCommonInfoList.add(t);
+					}
+				}
+			}
+			originalMapEntry.setValue(newRdrCommonInfoList);
+			return originalMapEntry;
+		}).collect(Collectors.toMap(newMapEntry -> newMapEntry.getKey(), newMapEntry -> newMapEntry.getValue()));
+		return filteredResults;
+	}
+	
+	private static <T> Map<String, List<T>> filterResultsGeneralErrorResponseObjectWDateNew(Map<String, List<T>> originalResults, Class<T> tClass, LocalDateTime localDateTimeToFilterAfter) {
+		Map<String, List<T>> filteredResults = originalResults.entrySet().stream().map(originalMapEntry -> {
+			List<T> newRdrCommonInfoList =  new ArrayList<T>();
+			for (T t : originalMapEntry.getValue()) {
+				GeneralErrorResponseObjectWDate generalErrorResponseObjectWDate = null;
+				if(GeneralErrorResponseObjectWDate.class.isAssignableFrom(t.getClass())) {
+					generalErrorResponseObjectWDate = (GeneralErrorResponseObjectWDate) t;
+					if(generalErrorResponseObjectWDate.getGeneralDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().isAfter(localDateTimeToFilterAfter)) {
+						newRdrCommonInfoList.add(t);
+					}
+				}
+			}
+			originalMapEntry.setValue(newRdrCommonInfoList);
+			return originalMapEntry;
+		}).collect(Collectors.toMap(newMapEntry -> newMapEntry.getKey(), newMapEntry -> newMapEntry.getValue()));
+		return filteredResults;
+	}
 
 	private static final Map<Integer, Integer> squares;
 
@@ -1172,8 +1226,9 @@ public class MyTask implements Tasklet {
 		log.info("The value of filteredMap is: {}", filteredMap != null ? UtilMethods.ObjectToJSONStringNoExceptions(filteredMap) : "OBJECT IS NULL");System.out.println();
 
 		Map<String, List<GeneralErrorResponseObjectWDateWString>> originalMapGeneralErrorResponseObjectWDateWString = new HashMap<String, List<GeneralErrorResponseObjectWDateWString>>();
-		originalMapGeneralErrorResponseObjectWDateWString.put("Twos", Arrays.asList(new GeneralErrorResponseObjectWDateWString(2, "Twos: 1", "002", getSpecificDate(2024, 1, 10, 10, 10, 10, 10), "2x1"), new GeneralErrorResponseObjectWDateWString(22, "Twos: 2", "022", getSpecificDate(2025, 1, 10, 10, 10, 10, 10), "2x2"), new GeneralErrorResponseObjectWDateWString(222, "Twos: 3", "222", getSpecificDate(2026, 1, 10, 10, 10, 10, 10), "2x3")));
 		originalMapGeneralErrorResponseObjectWDateWString.put("Ones", Arrays.asList(new GeneralErrorResponseObjectWDateWString(1, "Ones: 1", "001", getSpecificDate(2024, 9, 23, 10, 10, 10, 10), "1x1"), new GeneralErrorResponseObjectWDateWString(11, "Ones: 2", "011", getSpecificDate(2025, 9, 23, 10, 10, 10, 10), "1x2"), new GeneralErrorResponseObjectWDateWString(111, "Ones: 3", "111", getSpecificDate(2026, 9, 23, 10, 10, 10, 10), "1x3")));
+		originalMapGeneralErrorResponseObjectWDateWString.put("Twos", Arrays.asList(new GeneralErrorResponseObjectWDateWString(2, "Twos: 1", "002", getSpecificDate(2024, 1, 10, 10, 10, 10, 10), "2x1"), new GeneralErrorResponseObjectWDateWString(22, "Twos: 2", "022", getSpecificDate(2025, 1, 10, 10, 10, 10, 10), "2x2"), new GeneralErrorResponseObjectWDateWString(222, "Twos: 3", "222", getSpecificDate(2026, 1, 10, 10, 10, 10, 10), "2x3")));
+		originalMapGeneralErrorResponseObjectWDateWString.put("Threes", Arrays.asList(new GeneralErrorResponseObjectWDateWString(3, "Threes: 1", "003", getSpecificDate(2020, 5, 5, 10, 10, 10, 10), "3x1"), new GeneralErrorResponseObjectWDateWString(33, "Threes: 2", "033", getSpecificDate(2021, 5, 5, 10, 10, 10, 10), "3x2"), new GeneralErrorResponseObjectWDateWString(333, "Threes: 3", "333", getSpecificDate(2022, 5, 5, 10, 10, 10, 10), "3x3")));
 		
 		Map<String, List<GeneralErrorResponseObjectWDateWString>> filteredMapGeneralErrorResponseObjectWDateWString = filterResultsGeneralErrorResponseObjectWDate(originalMapGeneralErrorResponseObjectWDateWString, GeneralErrorResponseObjectWDateWString.class, LocalDateTime.of(2025, 1, 20, 0, 0));
 		log.info("The value of filteredMapGeneralErrorResponseObjectWDateWString is: {}", filteredMapGeneralErrorResponseObjectWDateWString != null ? UtilMethods.ObjectToJSONStringNoExceptions(filteredMapGeneralErrorResponseObjectWDateWString) : "OBJECT IS NULL");System.out.println();
