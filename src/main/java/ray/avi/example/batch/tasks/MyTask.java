@@ -198,44 +198,6 @@ public class MyTask implements Tasklet {
 		return switchSetValue;
 	}
 	
-	private static <T> Map<String, List<T>> filterResultsGeneralErrorResponseObjectWDateV1(Map<String, List<T>> originalResults, Class<T> tClass, LocalDateTime localDateTimeToFilterAfter) {
-		Map<String, List<T>> filteredResults = originalResults.entrySet().stream().filter(originalMapEntry -> {
-			boolean hasMatchingData = false;
-			List<T> newRdrCommonInfoList =  new ArrayList<T>();
-			for (T t : originalMapEntry.getValue()) {
-				GeneralErrorResponseObjectWDate generalErrorResponseObjectWDate = null;
-				if(GeneralErrorResponseObjectWDate.class.isAssignableFrom(t.getClass())) {
-					generalErrorResponseObjectWDate = (GeneralErrorResponseObjectWDate) t;
-					if(generalErrorResponseObjectWDate.getGeneralDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().isAfter(localDateTimeToFilterAfter)) {
-						newRdrCommonInfoList.add(t);
-						hasMatchingData = true;
-					}
-				}
-			}
-			originalMapEntry.setValue(newRdrCommonInfoList);
-			return hasMatchingData;
-		}).collect(Collectors.toMap(newMapEntry -> newMapEntry.getKey(), newMapEntry -> newMapEntry.getValue()));
-		return filteredResults;
-	}
-	
-	private static <T> Map<String, List<T>> filterResultsGeneralErrorResponseObjectWDateV2(Map<String, List<T>> originalResults, Class<T> tClass, LocalDateTime localDateTimeToFilterAfter) {
-		Map<String, List<T>> filteredResults = originalResults.entrySet().stream().map(originalMapEntry -> {
-			List<T> newRdrCommonInfoList =  new ArrayList<T>();
-			for (T t : originalMapEntry.getValue()) {
-				GeneralErrorResponseObjectWDate generalErrorResponseObjectWDate = null;
-				if(GeneralErrorResponseObjectWDate.class.isAssignableFrom(t.getClass())) {
-					generalErrorResponseObjectWDate = (GeneralErrorResponseObjectWDate) t;
-					if(generalErrorResponseObjectWDate.getGeneralDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().isAfter(localDateTimeToFilterAfter)) {
-						newRdrCommonInfoList.add(t);
-					}
-				}
-			}
-			originalMapEntry.setValue(newRdrCommonInfoList);
-			return originalMapEntry;
-		}).collect(Collectors.toMap(newMapEntry -> newMapEntry.getKey(), newMapEntry -> newMapEntry.getValue()));
-		return filteredResults;
-	}
-	
 	private static <T> Map<String, List<T>> filterResultsGeneralErrorResponseObjectWDate(Map<String, List<T>> originalResults, Class<T> tClass, LocalDateTime localDateTimeToFilterAfter) {
 		Map<String, List<T>> filteredResults = originalResults.entrySet().stream().map(originalMapEntry -> {
 			List<T> newRdrCommonInfoList =  new ArrayList<T>();
@@ -254,24 +216,6 @@ public class MyTask implements Tasklet {
 		return filteredResults;
 	}
 	
-	private static <T> Map<String, List<T>> filterResultsGeneralErrorResponseObjectWDateNew(Map<String, List<T>> originalResults, Class<T> tClass, LocalDateTime localDateTimeToFilterAfter) {
-		Map<String, List<T>> filteredResults = originalResults.entrySet().stream().map(originalMapEntry -> {
-			List<T> newRdrCommonInfoList =  new ArrayList<T>();
-			for (T t : originalMapEntry.getValue()) {
-				GeneralErrorResponseObjectWDate generalErrorResponseObjectWDate = null;
-				if(GeneralErrorResponseObjectWDate.class.isAssignableFrom(t.getClass())) {
-					generalErrorResponseObjectWDate = (GeneralErrorResponseObjectWDate) t;
-					if(generalErrorResponseObjectWDate.getGeneralDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().isAfter(localDateTimeToFilterAfter)) {
-						newRdrCommonInfoList.add(t);
-					}
-				}
-			}
-			originalMapEntry.setValue(newRdrCommonInfoList);
-			return originalMapEntry;
-		}).collect(Collectors.toMap(newMapEntry -> newMapEntry.getKey(), newMapEntry -> newMapEntry.getValue()));
-		return filteredResults;
-	}
-
 	private static final Map<Integer, Integer> squares;
 
 	static{
