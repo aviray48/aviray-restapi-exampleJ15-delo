@@ -12,10 +12,16 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -44,6 +50,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
 import javax.crypto.Cipher;
 import javax.xml.bind.JAXBElement;
 import org.apache.commons.lang3.StringUtils;
@@ -1177,6 +1186,9 @@ public class MyTask implements Tasklet {
 		Map<String, List<GeneralErrorResponseObjectWDateWString>> filteredMapGeneralErrorResponseObjectWDateWString = filterResultsGeneralErrorResponseObjectWDate(originalMapGeneralErrorResponseObjectWDateWString, GeneralErrorResponseObjectWDateWString.class, LocalDateTime.of(2025, 1, 20, 0, 0));
 		log.info("The value of filteredMapGeneralErrorResponseObjectWDateWString is: {}", filteredMapGeneralErrorResponseObjectWDateWString != null ? UtilMethods.ObjectToJSONStringNoExceptions(filteredMapGeneralErrorResponseObjectWDateWString) : "OBJECT IS NULL");System.out.println();
 		
+		List<String> outputList = null;
+		outputList = Stream.of("fileOne", "fileTwo", "fileThree").collect(Collectors.toList());
+        
 		//-------------------------------//
 		//-------------------------------//
 		
