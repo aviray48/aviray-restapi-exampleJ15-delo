@@ -56,6 +56,7 @@ import java.util.zip.ZipOutputStream;
 import javax.crypto.Cipher;
 import javax.xml.bind.JAXBElement;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1187,8 +1188,23 @@ public class MyTask implements Tasklet {
 		log.info("The value of filteredMapGeneralErrorResponseObjectWDateWString is: {}", filteredMapGeneralErrorResponseObjectWDateWString != null ? UtilMethods.ObjectToJSONStringNoExceptions(filteredMapGeneralErrorResponseObjectWDateWString) : "OBJECT IS NULL");System.out.println();
 		
 		List<String> outputList = null;
-		outputList = Stream.of("fileOne", "fileTwo", "fileThree").collect(Collectors.toList());
-        
+		outputList = Stream.of("StringOne", "StringTwo", "StringThree").collect(Collectors.toList());
+		log.info("The value of outputList is: {}", outputList);System.out.println();
+		
+		String stringIsParseableAsNumberTest;
+		stringIsParseableAsNumberTest = null;
+		log.info("The string with value {} is Parseable as a number: {}", stringIsParseableAsNumberTest, NumberUtils.isParsable(stringIsParseableAsNumberTest));System.out.println();
+		stringIsParseableAsNumberTest = "2.3";
+		log.info("The string with value {} is Parseable as a number: {}", stringIsParseableAsNumberTest, NumberUtils.isParsable(stringIsParseableAsNumberTest));System.out.println();
+		stringIsParseableAsNumberTest = "22";
+		log.info("The string with value {} is Parseable as a number: {}", stringIsParseableAsNumberTest, NumberUtils.isParsable(stringIsParseableAsNumberTest));System.out.println();
+		stringIsParseableAsNumberTest = "-35";
+		log.info("The string with value {} is Parseable as a number: {}", stringIsParseableAsNumberTest, NumberUtils.isParsable(stringIsParseableAsNumberTest));System.out.println();
+		stringIsParseableAsNumberTest = "6.02e+23";
+		log.info("The string with value {} is Parseable as a number: {}", stringIsParseableAsNumberTest, NumberUtils.isParsable(stringIsParseableAsNumberTest));System.out.println();
+
+		
+		
 		//-------------------------------//
 		//-------------------------------//
 		
