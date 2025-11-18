@@ -214,7 +214,12 @@ public class MyTask implements Tasklet {
 	}
 	
 	public static String getClobAndConvertToString(Map<String,Object> record, String key) throws SQLException, IOException {
-    	Clob clob = record.get(key) == null ? new SerialClob("".toCharArray()) : new SerialClob("This is a sample CLOB content.".toCharArray());
+    	//Clob clob = record.get(key) == null ? new SerialClob("".toCharArray()) : new SerialClob("This is a sample CLOB content.".toCharArray());
+    	//Clob clob = record.get(key) == null ? new SerialClob("".toCharArray()) : (Clob) record.get(key);
+		if(record.get(key) == null) {
+			return StringUtils.EMPTY;
+		}
+		Clob clob = (Clob) record.get(key);
     	long clobLength = clob.length();
         String clobAsString = null;
         if (clobLength <= Integer.MAX_VALUE) {
