@@ -16,12 +16,16 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.Reader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Clob;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -54,6 +58,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.crypto.Cipher;
+import javax.sql.rowset.serial.SerialClob;
 import javax.xml.bind.JAXBElement;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -207,6 +212,26 @@ public class MyTask implements Tasklet {
 		}
 		return switchSetValue;
 	}
+	
+	public static String getClobAndConvertToString(Map<String,Object> record, String key) throws SQLException, IOException {
+    	Clob clob = record.get(key) == null ? new SerialClob("".toCharArray()) : new SerialClob("This is a sample CLOB content.".toCharArray());
+    	long clobLength = clob.length();
+        String clobAsString = null;
+        if (clobLength <= Integer.MAX_VALUE) {
+            clobAsString = clob.getSubString(1, (int) clobLength);
+        }
+        else {
+        	StringBuilder sb = new StringBuilder();
+            try (Reader reader = clob.getCharacterStream()) {
+                char[] buffer = new char[4096];
+                while (reader.read(buffer) != -1) {
+                	sb.append(String.valueOf(buffer));
+                }
+            }
+            clobAsString = sb.toString();
+        }
+        return clobAsString;
+    }
 	
 	private static <T> Map<String, List<T>> filterResultsGeneralErrorResponseObjectWDate(Map<String, List<T>> originalResults, Class<T> tClass, LocalDateTime localDateTimeToFilterAfter) {
 		Map<String, List<T>> filteredResults = originalResults.entrySet().stream().map(originalMapEntry -> {
