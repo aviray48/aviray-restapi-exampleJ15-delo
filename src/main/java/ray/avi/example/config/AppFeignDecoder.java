@@ -18,7 +18,8 @@ public class AppFeignDecoder implements ErrorDecoder {
 	public Exception decode(String methodKey, Response response) {
 		if(response.body() != null) {
 			try {
-				String jsonString = new BufferedReader(new InputStreamReader(response.body().asInputStream())).lines().collect(Collectors.joining("\n"));
+				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.body().asInputStream()));
+				String jsonString = bufferedReader.lines().collect(Collectors.joining("\n"));
 				Map<?,?> responseMap = UtilMethods.JSONStringToObjectIgnoreUnknownProperties(jsonString, HashMap.class);
 				return new GeneralRuntimeException(responseMap.get("message") != null ? responseMap.get("message").toString() : null, responseMap.get("code") != null ? responseMap.get("code").toString(): null);
 			} catch(Exception ex) {
