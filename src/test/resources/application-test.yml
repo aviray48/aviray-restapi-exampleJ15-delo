@@ -1,0 +1,3 @@
+exampleTest:
+  serviceTest:
+    restuserTest: exampleRestUserTest
