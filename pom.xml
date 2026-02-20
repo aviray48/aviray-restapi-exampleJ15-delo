@@ -238,7 +238,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.12.0</version>
+			<version>3.12.0</version><!--$NO-MVN-MAN-VER$-->
 		</dependency>
 		<dependency>
 			<groupId>org.junit.vintage</groupId>
@@ -327,6 +327,31 @@
 			<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+			<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<configuration>
+						<archive>
+							<manifest>
+								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							</manifest>
+							<manifestEntries>
+								<Specification-Title>${project.name}</Specification-Title>
+								<Specification-Version>${project.version}</Specification-Version>
+								
+								<GIT_BRANCH>${GIT_BRANCH}</GIT_BRANCH>
+								<GIT_COMMIT>${GIT_COMMIT}</GIT_COMMIT>
+								
+								<BUILD_ID>${BUILD_ID}</BUILD_ID>
+								<BUILD_NUMBER>${BUILD_NUMBER}</BUILD_NUMBER>
+								<JOB_NAME>${JOB_NAME}</JOB_NAME>
+								
+								<BUILD_NUMBER>${BUILD_NUMBER}</BUILD_NUMBER>
+								<BUILD_TAG>${BUILD_TAG}</BUILD_TAG>
+							</manifestEntries>
+						</archive>
+					</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
