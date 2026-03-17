@@ -28,9 +28,11 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Calendar.Builder;
+import java.util.Map.Entry;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -231,6 +233,19 @@ public class BatchInternal {
 				put(2, 4);
 				put(3, 9);
 				put(4, 16);
+			}
+		};
+	}
+
+	private static HashMap <String, String> originalUnsortedMap;
+	
+	static{
+		originalUnsortedMap =   new HashMap<String, String>() {
+			private static final long serialVersionUID = 1L;
+			{
+				put("EXAMPLE_ONE", "ZZ: Example One");
+				put("EXAMPLE_TWO", "AA: Example Two");
+				put("EXAMPLE_THREE", "GG: Example Three");
 			}
 		};
 	}
@@ -1453,6 +1468,23 @@ public class BatchInternal {
 		Long valueOfNine = Long.valueOf(9);
 		List<Long> someSmallLongs = java.util.Arrays.asList(valueOfSeven, valueOfEight, valueOfNine);
 		doSomethingMethodContainingLoggerConsumer(someSmallLongs, s->log.info(s));
+		
+		Map <String, String> newUnsortedMap = originalUnsortedMap.entrySet().stream().collect(Collectors.toMap(Map.Entry<String, String>::getKey, Map.Entry<String, String>::getValue));
+		for (Entry<String, String> keyValueEntry : newUnsortedMap.entrySet()) {
+			String entryKey = keyValueEntry.getKey();
+			String entryValue = keyValueEntry.getValue();
+			log.info(MessageFormat.format(UtilMethods.getMethodName() + ": list of HashMap Keys/Values, unsorted:: Key: {0}, Value: {1}", entryKey, entryValue));
+		}
+		
+		Map <String, String> sortedByValueMap = originalUnsortedMap.entrySet().stream().sorted(Map.Entry.comparingByValue()).collect(Collectors.toMap(Map.Entry<String, String>::getKey, Map.Entry<String, String>::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+		for (Entry<String, String> keyValueEntry : sortedByValueMap.entrySet()) {
+			String entryKey = keyValueEntry.getKey();
+			String entryValue = keyValueEntry.getValue();
+			log.info(MessageFormat.format(UtilMethods.getMethodName() + ": list of HashMap Keys/Values, ordered by alphabetically ascending Value:: Key: {0}, Value: {1}", entryKey, entryValue));
+		}
+		
+		//-------------------------------//
+		//-------------------------------//
 		
 		System.out.println("");
 		System.out.println(new Date() + ": MyTask SimpleBatch DONE");
